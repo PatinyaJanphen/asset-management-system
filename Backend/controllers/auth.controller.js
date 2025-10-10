@@ -1,6 +1,7 @@
-import { prisma } from '../config/databaseconnect.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import transporter from '../config/nodemailer.js';
+import { prisma } from '../config/databaseconnect.js';
 
 export const register = async (req, res) => {
     const { firstname, lastname, email, username, password } = req.body;
@@ -36,7 +37,7 @@ export const register = async (req, res) => {
             },
         });
 
-        const userId = newUser.id;
+        const userId = newUser.id.toString();
 
         const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '12h' });
 
@@ -46,6 +47,16 @@ export const register = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             maxAge: 12 * 60 * 60 * 1000
         })
+
+        // send email to user for verify email
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: 'Verify your email',
+            text: `Please verify your email id: ${email}`
+        };
+
+        await transporter.sendMail(mailOptions);
 
         return res.json({
             succeses: true,
@@ -72,7 +83,6 @@ export const login = async (req, res) => {
     }
 
     try {
-        const db = await databaseconnect();
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user) {
@@ -90,11 +100,11 @@ export const login = async (req, res) => {
             })
         }
 
-        const userId = user.id;
+        const userId = user.id.toString();
 
         const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '12h' });
 
-        res.coolie('token', token, {
+        res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
@@ -121,7 +131,6 @@ export const logout = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            maxAge: 12 * 60 * 60 * 1000
         })
 
         return res.json({
@@ -137,3 +146,251 @@ export const logout = async (req, res) => {
         })
     }
 };
+
+// send otp to user for verify email
+export const sendVerificationEmail = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        if (user.isAccountVerified) {
+            return res.json({
+                succeses: false,
+                message: "Account already verified"
+            })
+        }
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+        user.verifyOtp = otp;
+        user.verifyOtpExpireAt = new Date(Date.now() + 10 * 60 * 1000); // OTP หมดอายุใน 10 นาที
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                verifyOtp: user.verifyOtp,
+                verifyOtpExpireAt: user.verifyOtpExpireAt
+            }
+        });
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Verify your email',
+            text: `Your OTP for email verification is ${otp}. It will expire in 10 minutes.`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.json({
+            succeses: true,
+            message: "Verification OTP sent to email"
+        })
+    }
+    catch (err) {
+        return res.json({
+            succeses: false,
+            message: "Send email fail",
+            error: err.message
+        })
+    }
+}
+
+// verify email with otp
+export const verifyEmail = async (req, res) => {
+    const { userId, otp } = req.body;
+
+    if (!userId || !otp) {
+        return res.json({
+            succeses: false,
+            message: "Missing Details"
+        })
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        if (!user) {
+            return res.json({
+                succeses: false,
+                message: "User not found"
+            })
+        }
+
+        if (user.verifyOtp === '' || user.verifyOtp !== otp) {
+            return res.json({
+                succeses: false,
+                message: "Invalid OTP"
+            })
+        }
+
+        if (user.verifyOtpExpireAt < new Date()) {
+            return res.json({
+                succeses: false,
+                message: "OTP has expired"
+            })
+        }
+
+        user.isAccountVerified = true;
+        user.verifyOtp = null;
+        user.verifyOtpExpireAt = null;
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                isAccountVerified: user.isAccountVerified,
+                verifyOtp: user.verifyOtp,
+                verifyOtpExpireAt: user.verifyOtpExpireAt
+            }
+        });
+
+        return res.json({
+            succeses: true,
+            message: "Email verified succeses"
+        })
+    } catch (err) {
+        return res.json({
+            succeses: false,
+            message: "Verify email fail",
+            error: err.message
+        })
+    }
+}
+
+// check user is authenticated
+export const isAuthenticated = async (req, res) => {
+    try {
+        return res.json({
+            success: true,
+            message: "User is authenticated",
+        })
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Server error",
+            error: error.message
+        })
+    }
+}
+
+// send reset password OTP
+export const sendResetPasswordOtp = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.json({
+            succeses: false,
+            message: "Email is required"
+        })
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.json({
+                succeses: false,
+                message: "User not found"
+            })
+        }
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+        user.resetOtp = otp;
+        user.resetOtpExpireAt = new Date(Date.now() + 10 * 60 * 1000); // OTP หมดอายุใน 10 นาที
+
+        await prisma.user.update({
+            where: { email },
+            data: {
+                resetOtp: user.resetOtp,
+                resetOtpExpireAt: user.resetOtpExpireAt
+            }
+        });
+
+         const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for reset your password is ${otp}. It will expire in 10 minutes.`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.json({
+            succeses: true,
+            message: "Password Reset OTP sent to email"
+        })
+
+    } catch (error) {
+        return res.json({
+            succeses: false,
+            message: "Send reset password OTP fail",
+            error: error.message
+        })
+    }
+
+}
+
+// reset password
+export const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+        return res.json({
+            succeses: false,
+            message: "Email, OTP and new password are required"
+        })
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.json({
+                succeses: false,
+                message: "User not found"
+            })
+        }
+
+        if (user.resetOtp === '' || user.resetOtp !== otp) {
+            return res.json({
+                succeses: false,
+                message: "Invalid OTP"
+            })
+        }
+
+        if (user.resetOtpExpireAt < new Date()) {
+            return res.json({
+                succeses: false,
+                message: "OTP has expired"
+            })
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = hashedPassword;
+        user.resetOtp = null;
+        user.resetOtpExpireAt = null;
+
+        await prisma.user.update({
+            where: { email },
+            data: {
+                password: user.password,
+                resetOtp: user.resetOtp,
+                resetOtpExpireAt: user.resetOtpExpireAt
+            }
+        }); 
+
+        return res.json({
+            succeses: true,
+            message: "Password reset succeses"
+        })
+    } catch (error) {
+        return res.json({
+            succeses: false,
+            message: "Reset password fail",
+            error: error.message
+        })
+    }
+}

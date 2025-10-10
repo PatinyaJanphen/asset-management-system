@@ -1,36 +1,38 @@
-import databaseconnect from "../config/databaseconnect.js";
+import { prisma } from '../config/databaseconnect.js';
 
-const userController = {
-    gertAllUsers: async (req, res) => {
-        try {
-            const db = await databaseconnect();
-            const [usersData] = await db.query('SELECT * FROM users');
-            if (!usersData) {
-                return res.status(404).send({
-                    success: false,
-                    message: "No users found"
-                });
-            }
-            res.status(200).send({
-                success: true,
-                message: "Users retrieved successfully",
-                total: usersData.length,
-                data: usersData
-            });
-        }
-        catch (err) {
-            console.log(err);
-            res.status(500).send({
+export const getUserData = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        const user = await prisma.user.findUnique({ where: { id: BigInt(userId) } })
+
+        if (!user) {
+            return res.json({
                 success: false,
-                message: "Server Error",
-                error: err
-            });
+                message: "User not foind"
+            })
         }
-    },
 
-    hello: (req, res) => {
-        res.send("Hello, Sakura!");
+        res.json({
+            success: true,
+            message: "User data fetched successfully",
+            data: {
+                id: user.id = Number(user.id),
+                username: user.username,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email,
+                role: user.role,
+                isAccountVerified: user.isAccountVerified,
+                createdAt: user.created_at,
+            }
+        })
+
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: "Server error",
+            error: error.message
+        })
     }
 }
-
-export default userController;

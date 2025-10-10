@@ -1,9 +1,9 @@
-import userController from "../controllers/user.contriller.js";
+import express from 'express';
+import userAuth from '../middleware/user.auth.js';
+import { getUserData } from '../controllers/user.contriller.js';
 
-const userRouter = (router) => {
-    router.get('/listuser', userController.gertAllUsers);
+const userRouter = express.Router();
 
-    router.get('/sakura', userController.hello);
-}
+userRouter.get('/data', userAuth, getUserData);
 
 export default userRouter;
