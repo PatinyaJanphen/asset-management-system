@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import transporter from '../config/nodemailer.js';
 import { prisma } from '../config/databaseconnect.js';
+import { PASSWORD_RESET_TEMPLATE } from '../config/email.tmplates.js';
 
 export const register = async (req, res) => {
     const { firstname, lastname, email, username, password } = req.body;
@@ -59,15 +60,15 @@ export const register = async (req, res) => {
         await transporter.sendMail(mailOptions);
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Rgistration succeses"
         })
     }
-    catch (err) {
+    catch (error) {
         res.json({
             success: false,
             message: "Server error",
-            error: err.message
+            error: error.message
         })
     }
 };
@@ -77,7 +78,7 @@ export const login = async (req, res) => {
 
     if (!email || !password) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Email and password are required"
         })
     }
@@ -95,14 +96,14 @@ export const login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "Invalid password"
             })
         }
 
         const userId = user.id.toString();
 
-        const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '12h' });
+        const token = jwt.sign({ id: userId }, process.env.JWT_SECRET || 'default_jwt_secret', { expiresIn: '12h' });
 
         res.cookie('token', token, {
             httpOnly: true,
@@ -112,15 +113,15 @@ export const login = async (req, res) => {
         })
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Login succeses"
         })
     }
-    catch (err) {
+    catch (error) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Login fail",
-            error: err.message
+            error: error.message
         })
     }
 };
@@ -134,15 +135,15 @@ export const logout = async (req, res) => {
         })
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Logout succeses",
         })
     }
-    catch (err) {
+    catch (error) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Logout fail",
-            error: err.message
+            error: error.message
         })
     }
 };
@@ -156,7 +157,7 @@ export const sendVerificationEmail = async (req, res) => {
 
         if (user.isAccountVerified) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "Account already verified"
             })
         }
@@ -184,15 +185,15 @@ export const sendVerificationEmail = async (req, res) => {
         await transporter.sendMail(mailOptions);
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Verification OTP sent to email"
         })
     }
-    catch (err) {
+    catch (error) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Send email fail",
-            error: err.message
+            error: error.message
         })
     }
 }
@@ -203,7 +204,7 @@ export const verifyEmail = async (req, res) => {
 
     if (!userId || !otp) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Missing Details"
         })
     }
@@ -220,14 +221,14 @@ export const verifyEmail = async (req, res) => {
 
         if (user.verifyOtp === '' || user.verifyOtp !== otp) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "Invalid OTP"
             })
         }
 
         if (user.verifyOtpExpireAt < new Date()) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "OTP has expired"
             })
         }
@@ -246,12 +247,12 @@ export const verifyEmail = async (req, res) => {
         });
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Email verified succeses"
         })
     } catch (err) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Verify email fail",
             error: err.message
         })
@@ -280,7 +281,7 @@ export const sendResetPasswordOtp = async (req, res) => {
 
     if (!email) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Email is required"
         })
     }
@@ -290,7 +291,7 @@ export const sendResetPasswordOtp = async (req, res) => {
 
         if (!user) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "User not found"
             })
         }
@@ -308,24 +309,24 @@ export const sendResetPasswordOtp = async (req, res) => {
             }
         });
 
-         const mailOptions = {
+        const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: 'Password Reset OTP',
-            text: `Your OTP for reset your password is ${otp}. It will expire in 10 minutes.`
+            html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace("{{email}}", user.email)
         };
 
         await transporter.sendMail(mailOptions);
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Password Reset OTP sent to email"
         })
 
     } catch (error) {
         return res.json({
             succeses: false,
-            message: "Send reset password OTP fail",
+            success: "Send reset password OTP fail",
             error: error.message
         })
     }
@@ -338,7 +339,7 @@ export const resetPassword = async (req, res) => {
 
     if (!email || !otp || !newPassword) {
         return res.json({
-            succeses: false,
+            success: false,
             message: "Email, OTP and new password are required"
         })
     }
@@ -348,21 +349,21 @@ export const resetPassword = async (req, res) => {
 
         if (!user) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "User not found"
             })
         }
 
         if (user.resetOtp === '' || user.resetOtp !== otp) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "Invalid OTP"
             })
         }
 
         if (user.resetOtpExpireAt < new Date()) {
             return res.json({
-                succeses: false,
+                success: false,
                 message: "OTP has expired"
             })
         }
@@ -380,16 +381,16 @@ export const resetPassword = async (req, res) => {
                 resetOtp: user.resetOtp,
                 resetOtpExpireAt: user.resetOtpExpireAt
             }
-        }); 
+        });
 
         return res.json({
-            succeses: true,
+            success: true,
             message: "Password reset succeses"
         })
     } catch (error) {
         return res.json({
             succeses: false,
-            message: "Reset password fail",
+            success: "Reset password fail",
             error: error.message
         })
     }

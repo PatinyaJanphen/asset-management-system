@@ -16,7 +16,7 @@ export const getUserData = async (req, res) => {
         res.json({
             success: true,
             message: "User data fetched successfully",
-            data: {
+            userData: {
                 id: user.id = Number(user.id),
                 username: user.username,
                 firstname: user.firstname,
