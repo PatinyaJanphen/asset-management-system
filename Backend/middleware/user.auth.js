@@ -1,35 +1,24 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const userAuth = (req, res, next) => {
-    const { token } = req.cookies;
-
+    const token = req.cookies?.token;
     if (!token) {
-        return res.json({
+        return res.status(401).json({
             success: false,
-            message: "Access Denied! Login to continue"
-        })
+            message: "Access denied! Please login to continue",
+        });
     }
 
     try {
-        const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
-
-        if (tokenDecode) {
-            req.body.userId = tokenDecode.id;
-            next();
-        }
-        else {
-            return res.json({
-                success: false,
-                message: "Not Authorized Login to again"
-            })
-        }
-
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.id;
+        next();
     } catch (error) {
-        return res.json({
+        return res.status(401).json({
             success: false,
-            message: "Invalid Token"
-        })
+            message: "Invalid or expired token",
+        });
     }
-}
+};
 
 export default userAuth;

@@ -2,33 +2,45 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import router from './routes/router.js';
 import { databaseconnect } from './config/databaseconnect.js';
-import cookieParser from 'cookie-parser';
 
-// configure environment
+// Load environment variables
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT;
-const allowedOrigins = ['http://localhost:5173']
+const port = process.env.PORT || 3000;
+const allowedOrigins = ['http://localhost:5173'];
 
+// Middleware
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true,
+}));
 app.use(cookieParser());
 
-// Database connection
+// Database
 databaseconnect();
 
-// Runing server on port
+// Routes
+app.get('/', (req, res) => {
+    res.send('Welcome to Asset Management System API');
+});
+app.use('/api', router);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
+});
+
+// Start Server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-
-// API routes
-app.get('/', (req, res) => { res.send('Welcome to Asset Management System API'); });
-app.use('/api', router);
-
 
 export default app;
