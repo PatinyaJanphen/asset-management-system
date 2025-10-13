@@ -14,43 +14,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                 BigInt      @id @default(autoincrement())
-  firstname          String
-  lastname           String
-  email              String      @unique
-  username           String      @unique
-  password           String
-  verifyOtp          String?     // ใช้เก็บรหัส OTP สำหรับ verify email
-  verifyOtpExpireAt  DateTime?   // วันหมดอายุ OTP reset
-  isAccountVerified  Boolean     @default(false)
-  resetOtp           String?     // ใช้เก็บ OTP สำหรับ reset password
-  resetOtpExpireAt   DateTime?   // วันหมดอายุ OTP reset
-  phone              String?     
-  role               Role        @default(USER)
-  is_active          Boolean     @default(true)
-  firstlogin_at      DateTime? 
-  lastlogin_at       DateTime?
-  created_at         DateTime    @default(now())
-  updated_at         DateTime?
-  assets             Asset[]     // ความสัมพันธ์กับตาราง Asset
-}
-
-model Asset {
-  id             BigInt     @id @default(autoincrement())
-  name           String
-  description    String?
-  serial_number  String     @unique
-  status         AssetStatus @default(AVAILABLE)
-  assignedTo     User?       @relation(fields: [userId], references: [id])
-  userId         BigInt?
-  created_at     DateTime   @default(now())
-  updated_at     DateTime   @updatedAt
-}
-
+/// --- enums
 enum Role {
   ADMIN
-  USER
+  ASSET_STAFF
+  OWNER
 }
 
 enum AssetStatus {
@@ -60,3 +28,172 @@ enum AssetStatus {
   RETIRED
 }
 
+enum AuditStatus {
+  PENDING
+  OK
+  DAMAGED
+  MISSING
+}
+
+/// --- models
+model User {
+  id                BigInt      @id @default(autoincrement())
+  firstname         String
+  lastname          String
+  email             String      @unique
+  username          String?     @unique
+  password          String
+  phone             String?
+  role              Role        @default(OWNER)
+  is_active         Boolean     @default(true)
+  isAccountVerified Boolean     @default(false)
+
+  verifyOtp         String?
+  verifyOtpExpireAt DateTime?
+
+  resetOtp          String?
+  resetOtpExpireAt  DateTime?
+
+  firstlogin_at     DateTime?
+  lastlogin_at      DateTime?
+
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+
+  assets            Asset[]     @relation("OwnerAssets")
+  logs              AssetLog[]
+  audits            AssetAudit[] @relation("UserAudits")
+
+  uploadedPhotos        AssetPhoto[]      @relation("UserAssetPhotos")
+  uploadedAuditPhotos   AssetAuditPhoto[] @relation("UserAuditPhotos")
+  excelImports          ExcelImport[]     @relation("UserExcelImports")
+}
+
+model Category {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @unique
+  description String?
+
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  assets      Asset[]
+}
+
+model Room {
+  id          BigInt    @id @default(autoincrement())
+  code        String    @unique
+  name        String
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  assets      Asset[]
+}
+
+model Asset {
+  id            BigInt        @id @default(autoincrement())
+  code          String        @unique
+  name          String
+  description   String?
+  serial_number String?       @unique
+  categoryId    BigInt?
+  roomId        BigInt?
+  ownerId       BigInt?
+  status        AssetStatus   @default(AVAILABLE)
+  purchase_at   DateTime?
+  value         Float?
+  is_active     Boolean       @default(true)
+  created_by    BigInt?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  category      Category?     @relation(fields: [categoryId], references: [id])
+  room          Room?         @relation(fields: [roomId], references: [id])
+  owner         User?         @relation("OwnerAssets", fields: [ownerId], references: [id])
+  photos        AssetPhoto[]
+  logs          AssetLog[]
+  audits        AssetAudit[]
+
+  @@index([categoryId])
+  @@index([roomId])
+  @@index([ownerId])
+}
+
+model AssetPhoto {
+  id         BigInt    @id @default(autoincrement())
+  assetId    BigInt
+  url        String
+  uploadedBy BigInt?
+  note       String?
+  created_at DateTime  @default(now())
+
+  asset      Asset     @relation(fields: [assetId], references: [id])
+  user       User?     @relation("UserAssetPhotos", fields: [uploadedBy], references: [id])
+
+  @@index([assetId])
+}
+
+model AssetAudit {
+  id               BigInt       @id @default(autoincrement())
+  assetId          BigInt
+  auditorId        BigInt?
+  auditYear        Int
+  status           AuditStatus  @default(PENDING)
+  note             String?
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  asset            Asset        @relation(fields: [assetId], references: [id])
+  auditor          User?        @relation("UserAudits", fields: [auditorId], references: [id])
+  photos           AssetAuditPhoto[]
+
+  @@index([assetId])
+  @@index([auditorId])
+  @@index([auditYear])
+}
+
+model AssetAuditPhoto {
+  id         BigInt      @id @default(autoincrement())
+  auditId    BigInt
+  url        String
+  uploadedBy BigInt?
+  note       String?
+  created_at DateTime    @default(now())
+
+  audit      AssetAudit  @relation(fields: [auditId], references: [id])
+  user       User?       @relation("UserAuditPhotos", fields: [uploadedBy], references: [id])
+
+  @@index([auditId])
+}
+
+model AssetLog {
+  id          BigInt     @id @default(autoincrement())
+  assetId     BigInt?
+  userId      BigInt?
+  action      String
+  detail      String?
+  created_at  DateTime   @default(now())
+
+  asset       Asset?     @relation(fields: [assetId], references: [id])
+  user        User?      @relation(fields: [userId], references: [id])
+
+  @@index([assetId])
+  @@index([userId])
+}
+
+model ExcelImport {
+  id            BigInt    @id @default(autoincrement())
+  filename      String
+  importedBy    BigInt?
+  totalRows     Int?
+  successRows   Int?
+  failedRows    Int?
+  errorLogUrl   String?
+  created_at    DateTime  @default(now())
+
+  user          User?     @relation("UserExcelImports", fields: [importedBy], references: [id])
+
+  @@index([importedBy])
+  @@index([created_at])
+}
