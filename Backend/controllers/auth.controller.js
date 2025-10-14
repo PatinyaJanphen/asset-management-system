@@ -74,7 +74,7 @@ export const login = async (req, res) => {
         });
 
         await prisma.user.update({
-            where: { id: user.id },
+            where: { id: BigInt(user.id) },
             data: { lastlogin_at: new Date() },
         });
 
