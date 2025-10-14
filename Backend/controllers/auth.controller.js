@@ -64,7 +64,7 @@ export const login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.json({ success: false, message: "Invalid email or password" });
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "12h" });
+        const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "12h" });
 
         res.cookie("token", token, {
             httpOnly: true,
@@ -73,7 +73,22 @@ export const login = async (req, res) => {
             maxAge: 12 * 60 * 60 * 1000,
         });
 
-        return res.json({ success: true, message: "Login successful" });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastlogin_at: new Date() },
+        });
+
+        return res.json({
+            success: true,
+            message: "Login successful",
+            user: {
+                id: Number(user.id),
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email,
+                role: user.role,
+            },
+        });
     } catch (error) {
         return res.json({ success: false, message: "Server error", error: error.message });
     }
