@@ -6,6 +6,10 @@ import cookieParser from 'cookie-parser';
 import router from './routes/router.js';
 import { databaseconnect } from './config/databaseconnect.js';
 
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 // Load environment variables
 dotenv.config();
 
