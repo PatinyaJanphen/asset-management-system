@@ -4,9 +4,9 @@ import userAuth from "../middleware/userAuth.js";
 
 const roomRouter = express.Router();
 
-roomRouter.get('/', userAuth, getRoom);
 roomRouter.get('/all', userAuth, getAllRoom);
-roomRouter.post('/create-room', userAuth, createRoom);
-roomRouter.post('/update-room', userAuth, updateRoom);
+roomRouter.get('/get/:id', userAuth, getRoom);
+roomRouter.post('/create', userAuth, createRoom);
+roomRouter.put('/update/:id', userAuth, updateRoom);
 
 export default roomRouter;

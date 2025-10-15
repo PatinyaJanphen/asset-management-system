@@ -10,9 +10,13 @@ import Setting from './pages/Setting';
 import { Navigate } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
 import MainLayout from './components/MainLayout';
-import Asset from './pages/Asset';
-import Room from './pages/Room';
-import Category from './pages/Category';
+import Asset from './pages/asset/Asset';
+import Room from './pages/room/Room';
+import EditRoom from './pages/room/EditRoom';
+import Category from './pages/category/Category';
+import CreateRoom from './pages/room/CreateRoom';
+import CreateCategory from './pages/category/CreateCategory';
+import EditCategory from './pages/category/EditCategory';
 
 const App = () => {
   return (
@@ -29,8 +33,14 @@ const App = () => {
             <Route path='/' element={<Dashboard />} />
 
             <Route path='/management/assets' element={<Asset />} />
+
             <Route path='/management/rooms' element={<Room />} />
+            <Route path='/management/room/create' element={<CreateRoom />} />
+            <Route path='/management/room/edit/:id' element={<EditRoom />} />
+
             <Route path='/management/categorys' element={<Category />} />
+            <Route path='/management/category/create' element={<CreateCategory />} />
+            <Route path='/management/category/edit/:id' element={<EditCategory />} />
 
             <Route path='/setting' element={<Setting />} />
             <Route path='/setting/profile' element={<Profile />} />
