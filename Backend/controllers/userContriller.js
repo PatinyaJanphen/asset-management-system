@@ -2,7 +2,7 @@ import { prisma } from '../config/databaseconnect.js';
 
 export const getUser = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const userId = req.user?.id;
         const user = await prisma.user.findUnique({ where: { id: BigInt(userId) } })
         if (!user) return res.json({ success: false, message: "User not found" })
 

@@ -2,7 +2,7 @@ import { prisma } from "../config/databaseconnect.js";
 
 //  Create Asset 
 export const createAsset = async (req, res) => {
-    const { name, category, location, status } = req.body;
+    const { category, location, code, name, locdescriptionation, serial_number } = req.body;
 
     if (!name || !category || !location) {
         return res.json({ success: false, message: "Name, category and location are required" });
@@ -10,7 +10,7 @@ export const createAsset = async (req, res) => {
 
     try {
         const asset = await prisma.asset.create({
-            data: { name, category, location, status },
+            data: { code, name, locdescriptionation, serial_number },
         });
 
         return res.json({ success: true, message: "Asset created", asset });

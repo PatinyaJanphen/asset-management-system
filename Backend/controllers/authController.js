@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import transporter from '../config/nodemailer.js';
 import { prisma } from '../config/databaseconnect.js';
-import { PASSWORD_RESET_TEMPLATE } from '../config/email.tmplates.js';
+import { PASSWORD_RESET_TEMPLATE } from '../config/emailTmplates.js';
 
 export const register = async (req, res) => {
     const { firstname, lastname, email, username, password } = req.body;
