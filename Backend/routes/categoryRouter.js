@@ -4,9 +4,9 @@ import userAuth from "../middleware/userAuth.js"
 
 const categoryRouter = express.Router()
 
-categoryRouter.get("/", userAuth, getCategory)
 categoryRouter.get("/all", userAuth, getAllCategory)
-categoryRouter.post("/create-category", userAuth, createCategory)
-categoryRouter.post("/update-category", userAuth, updateCategory)
+categoryRouter.get("/get/:id", userAuth, getCategory)
+categoryRouter.post("/create", userAuth, createCategory)
+categoryRouter.put("/update/:id", userAuth, updateCategory)
 
 export default categoryRouter
