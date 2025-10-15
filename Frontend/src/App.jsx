@@ -10,6 +10,9 @@ import Setting from './pages/Setting';
 import { Navigate } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
 import MainLayout from './components/MainLayout';
+import Asset from './pages/Asset';
+import Room from './pages/Room';
+import Category from './pages/Category';
 
 const App = () => {
   return (
@@ -24,9 +27,14 @@ const App = () => {
         <Route element={<PrivateRoute />}>
           <Route element={<MainLayout />}>
             <Route path='/' element={<Dashboard />} />
-            <Route path='/email-verify' element={<EmailVerify />} />
+
+            <Route path='/management/assets' element={<Asset />} />
+            <Route path='/management/rooms' element={<Room />} />
+            <Route path='/management/categorys' element={<Category />} />
+
             <Route path='/setting' element={<Setting />} />
-            <Route path='/profile' element={<Profile />} />
+            <Route path='/setting/profile' element={<Profile />} />
+            <Route path='/email-verify' element={<EmailVerify />} />
           </Route>
         </Route>
 
