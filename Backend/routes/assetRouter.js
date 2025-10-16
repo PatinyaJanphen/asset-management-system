@@ -1,15 +1,15 @@
 import express from "express";
-import { createAsset, getAllAssets, getAssetById, updateAsset, deleteAsset, } from "../controllers/assetController.js";
+import { createAsset, getAllAssets, getAssetById, updateAsset } from "../controllers/assetController.js";
 import userAuth from "../middleware/userAuth.js";
 
 const assetRouter = express.Router();
 
 // assetRouter.use(userAuth);
 
-assetRouter.post("/", userAuth, createAsset);
-assetRouter.get("/", userAuth, getAllAssets);
-assetRouter.get("/:id", userAuth, getAssetById);
-assetRouter.put("/:id", userAuth, updateAsset);
-assetRouter.delete("/:id", userAuth, deleteAsset);
+
+assetRouter.get("/all", userAuth, getAllAssets);
+assetRouter.get("/get/:id", userAuth, getAssetById);
+assetRouter.post("/create", userAuth, createAsset);
+assetRouter.put("/update/:id", userAuth, updateAsset);
 
 export default assetRouter;

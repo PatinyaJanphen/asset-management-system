@@ -17,6 +17,8 @@ import Category from './pages/category/Category';
 import CreateRoom from './pages/room/CreateRoom';
 import CreateCategory from './pages/category/CreateCategory';
 import EditCategory from './pages/category/EditCategory';
+import CreateAsset from './pages/asset/CreateAsset';
+import EditAsset from './pages/asset/EditAsset';
 
 const App = () => {
   return (
@@ -33,6 +35,8 @@ const App = () => {
             <Route path='/' element={<Dashboard />} />
 
             <Route path='/management/assets' element={<Asset />} />
+            <Route path='/management/asset/create' element={<CreateAsset />} />
+            <Route path='/management/asset/edit/:id' element={<EditAsset />} />
 
             <Route path='/management/rooms' element={<Room />} />
             <Route path='/management/room/create' element={<CreateRoom />} />
@@ -49,7 +53,7 @@ const App = () => {
         </Route>
 
         {/* Default redirect */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   )

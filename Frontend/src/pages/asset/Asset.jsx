@@ -15,44 +15,44 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 
-const Room = () => {
+const Asset = () => {
     const { backendUrl } = useContext(AppContent)
     const navigate = useNavigate()
-    const [rooms, setRooms] = useState([])
+    const [assets, setAssets] = useState([])
     const [loading, setLoading] = useState(true)
     const [columnFilters, setColumnFilters] = useState([])
 
-    const fetchRooms = async () => {
+    const fetchAssets = async () => {
         try {
             setLoading(true)
-            const { data } = await axios.get(backendUrl + '/api/room/all')
+            const { data } = await axios.get(backendUrl + '/api/asset/all')
             if (data.success) {
-                setRooms(data.data || [])
+                setAssets(data.data || [])
             } else {
                 toast.error(data.message)
-                setRooms([])
+                setAssets([])
             }
         } catch (error) {
             toast.error(error.message)
-            setRooms([])
+            setAssets([])
         } finally {
             setLoading(false)
         }
     }
 
     useEffect(() => {
-        fetchRooms()
+        fetchAssets()
     }, [])
 
-    const handleEditRoom = (rooms) => {
-        navigate(`/management/room/edit/${rooms.id}`)
+    const handleEditRoom = (assets) => {
+        navigate(`/management/asset/edit/${assets.id}`)
     }
 
     const columns = useMemo(
         () => [
             {
                 accessorKey: 'code',
-                header: 'Code',
+                header: 'รหัสสินทรัพย์',
                 cell: info => info.getValue(),
                 meta: {
                     filterVariant: 'text',
@@ -60,28 +60,70 @@ const Room = () => {
             },
             {
                 accessorKey: 'name',
-                header: 'Name',
+                header: 'ชื่อสินทรัพย์',
                 cell: info => info.getValue(),
                 meta: {
                     filterVariant: 'text',
                 },
             },
             {
-                accessorKey: 'description',
-                header: 'Description',
-                cell: info => info.getValue(),
+                accessorKey: 'status',
+                header: 'สถานะ',
+                cell: info => {
+                    const status = info.getValue()
+                    const statusMap = {
+                        'AVAILABLE': 'พร้อมใช้งาน',
+                        'ASSIGNED': 'มอบหมายแล้ว',
+                        'MAINTENANCE': 'ซ่อมบำรุง',
+                        'RETIRED': 'ปลดระวาง'
+                    }
+                    return statusMap[status] || status
+                },
+                meta: {
+                    filterVariant: 'text',
+                },
+            },
+            {
+                accessorKey: 'category',
+                header: 'หมวดหมู่',
+                cell: info => {
+                    const category = info.row.original.category
+                    return category ? category.name : '-'
+                },
+                meta: {
+                    filterVariant: 'text',
+                },
+            },
+            {
+                accessorKey: 'room',
+                header: 'ห้อง',
+                cell: info => {
+                    const room = info.row.original.room
+                    return room ? `${room.name} (${room.code})` : '-'
+                },
+                meta: {
+                    filterVariant: 'text',
+                },
+            },
+            {
+                accessorKey: 'owner',
+                header: 'เจ้าของ',
+                cell: info => {
+                    const owner = info.row.original.owner
+                    return owner ? `${owner.firstname} ${owner.lastname}` : '-'
+                },
                 meta: {
                     filterVariant: 'text',
                 },
             },
             {
                 id: 'actions',
-                header: 'Actions',
+                header: 'การดำเนินการ',
                 cell: ({ row }) => (
                     <div className="flex gap-2">
                         <button onClick={() => handleEditRoom(row.original)}
                             className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">
-                            Edit
+                            แก้ไข
                         </button>
 
                     </div>
@@ -92,7 +134,7 @@ const Room = () => {
     )
 
     const table = useReactTable({
-        data: rooms,
+        data: assets,
         columns,
         state: {
             columnFilters,
@@ -121,12 +163,12 @@ const Room = () => {
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Room Management</h2>
+                <h2 className="text-2xl font-bold text-gray-800">จัดการสินทรัพย์</h2>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow-md"
-                    onClick={() => { navigate('/management/room/create') }}
+                    onClick={() => { navigate('/management/asset/create') }}
                 >
-                    + Add Room
+                    + เพิ่มสินทรัพย์
                 </button>
             </div>
             <table className="min-w-full border border-gray-300">
@@ -313,8 +355,8 @@ function Filter({ column }) {
             value={columnFilterValue?.toString()}
         >
             <option value="">All</option>
-            {sortedUniqueValues.map(value => (
-                <option value={value} key={value}>
+            {sortedUniqueValues.map((value, index) => (
+                <option value={value} key={`${column.id}-select-${index}`}>
                     {value}
                 </option>
             ))}
@@ -322,8 +364,8 @@ function Filter({ column }) {
     ) : (
         <>
             <datalist id={column.id + 'list'}>
-                {sortedUniqueValues.map((value) => (
-                    <option value={value} key={value} />
+                {sortedUniqueValues.map((value, index) => (
+                    <option value={value} key={`${column.id}-${index}`} />
                 ))}
             </datalist>
             <DebouncedInput
@@ -364,4 +406,4 @@ function DebouncedInput({
     )
 }
 
-export default Room
+export default Asset;
