@@ -2,20 +2,26 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useContext } from "react";
 import { AppContent } from "../context/AppContext";
 
-const PrivateRoute = () => {
-    const { isLoggedin, loadingAuth } = useContext(AppContent);
+const PrivateRoute = ({ allowedRoles }) => {
+    const { isLoggedin, loadingAuth, userData } = useContext(AppContent);
 
     if (loadingAuth) {
-        return
-        <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-center h-64">
-                <div className="text-gray-500">กำลังโหลดข้อมูล...</div>
+        return (
+            <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-center h-64">
+                    <div className="text-gray-500">กำลังโหลดข้อมูล...</div>
+                </div>
             </div>
-        </div>
+        );
     }
 
-    if (!isLoggedin) return <Navigate to="login" replace />
-    return <Outlet />;
-}
+    if (!isLoggedin) return <Navigate to="/login" replace />;
 
-export default PrivateRoute
+    if (allowedRoles && !allowedRoles.includes(userData.role)) {
+        return <Navigate to="/*" replace />;
+    }
+
+    return <Outlet />;
+};
+
+export default PrivateRoute;

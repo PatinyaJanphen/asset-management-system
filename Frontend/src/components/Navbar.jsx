@@ -8,7 +8,7 @@ const Navbar = () => {
 
     return (
         <nav className="w-full flex justify-between items-center py-4 px-6 bg-white shadow-md">
-            <h1 className="text-2xl font-bold">Asset-ss</h1>
+            <h1 className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>Asset-ss</h1>
 
             {userData ? (
                 <div className="relative group">

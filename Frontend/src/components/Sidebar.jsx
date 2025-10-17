@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FiMenu, FiHome, FiUser, FiSettings, FiLogOut, FiChevronUp, FiChevronsDown } from "react-icons/fi";
+import { FiMenu, FiHome, FiUser, FiSettings, FiLogOut, FiChevronUp, FiChevronsDown, FiDatabase } from "react-icons/fi";
 import { AppContent } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -63,7 +63,7 @@ const Sidebar = () => {
                     <li>
                         <div onClick={() => setIsManagementOpen(!isManagementOpen)} className={`flex items-center justify-between cursor-pointer px-4 py-3 hover:bg-gray-700 ${isSettingsOpen ? 'bg-gray-800' : ''}`}  >
                             <div className="flex items-center gap-2">
-                                <FiSettings />
+                                <FiDatabase />
                                 {isOpen && <span>Management </span>}
                             </div>
                             {isOpen && (isManagementOpen ? <FiChevronUp /> : <FiChevronsDown />)}
@@ -74,12 +74,17 @@ const Sidebar = () => {
                                 <li onClick={() => navigation('/management/assets')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/assets' ? 'bg-indigo-600' : ''}`} >
                                     Assets
                                 </li>
-                                <li onClick={() => navigation('/management/rooms')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/rooms' ? 'bg-indigo-600' : ''}`} >
-                                    Rooms
-                                </li>
-                                <li onClick={() => navigation('/management/categorys')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/categories' ? 'bg-indigo-600' : ''}`} >
-                                    Caregories
-                                </li>
+                                {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                                    <li onClick={() => navigation('/management/rooms')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/rooms' ? 'bg-indigo-600' : ''}`} >
+                                        Rooms
+                                    </li>
+                                }
+                                {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                                    <li onClick={() => navigation('/management/categorys')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/categories' ? 'bg-indigo-600' : ''}`} >
+                                        Caregories
+                                    </li>
+                                }
+
                             </ul>
                         )}
                     </li>
