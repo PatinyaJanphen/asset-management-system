@@ -1,0 +1,5 @@
+code,name,description,serial_number,categoryName,roomCode,ownerEmail,status,purchase_at,value,is_active
+ASSET001,คอมพิวเตอร์,คอมพิวเตอร์สำหรับใช้งานทั่วไป,SN123456,คอมพิวเตอร์,ROOM001,admin@example.com,AVAILABLE,2024-01-01,25000,true
+ASSET002,เครื่องพิมพ์,เครื่องพิมพ์เลเซอร์,SN789012,คอมพิวเตอร์,ROOM001,admin@example.com,AVAILABLE,2024-01-15,15000,true
+ASSET003,โต๊ะทำงาน,โต๊ะทำงานไม้,SN345678,เฟอร์นิเจอร์,ROOM002,user@example.com,AVAILABLE,2024-02-01,5000,true
+ASSET004,เก้าอี้,เก้าอี้สำนักงาน,SN456789,เฟอร์นิเจอร์,ROOM001,admin@example.com,AVAILABLE,2024-02-15,3000,true

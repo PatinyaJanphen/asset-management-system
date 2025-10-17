@@ -12,7 +12,10 @@ export const getDashboardSummary = async (req, res) => {
         const assetByCategoryRaw = await prisma.asset.groupBy({ by: ['categoryId'], _count: { id: true }, });
         const assetByCategory = await Promise.all(
             assetByCategoryRaw.map(async (c) => {
-                const category = await prisma.category.findUnique({ where: { id: c.categoryId }, select: { name: true }, });
+                let category = null;
+                if (c.categoryId) {
+                    category = await prisma.category.findUnique({ where: { id: c.categoryId }, select: { name: true }, });
+                }
                 return {
                     categoryId: c.categoryId,
                     categoryName: category?.name || "Uncategorized",
@@ -103,10 +106,13 @@ export const getDashboardSummaryOwner = async (req, res) => {
         const assetByCategoryRaw = await prisma.asset.groupBy({ where: { ownerId: currentUser.id }, by: ['categoryId'], _count: { id: true }, });
         const assetByCategory = await Promise.all(
             assetByCategoryRaw.map(async (c) => {
-                const category = await prisma.category.findUnique({
-                    where: { id: c.categoryId },
-                    select: { name: true },
-                });
+                let category = null;
+                if (c.categoryId) {
+                    category = await prisma.category.findUnique({
+                        where: { id: c.categoryId },
+                        select: { name: true },
+                    });
+                }
                 return {
                     categoryId: c.categoryId,
                     categoryName: category?.name || "Uncategorized",

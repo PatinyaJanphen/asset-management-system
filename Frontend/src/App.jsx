@@ -4,6 +4,8 @@ import Dashboard from "./pages/Dashboard";
 import Asset from "./pages/asset/Asset";
 import CreateAsset from "./pages/asset/CreateAsset";
 import EditAsset from "./pages/asset/EditAsset";
+import ImportAsset from "./pages/asset/ImportAsset";
+import ImportHistory from "./pages/asset/ImportHistory";
 import Room from "./pages/room/Room";
 import CreateRoom from "./pages/room/CreateRoom";
 import EditRoom from "./pages/room/EditRoom";
@@ -39,6 +41,8 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
               <Route path="/management/asset/create" element={<CreateAsset />} />
               <Route path="/management/asset/edit/:id" element={<EditAsset />} />
+              <Route path="/management/asset/import" element={<ImportAsset />} />
+              <Route path="/management/asset/import-history" element={<ImportHistory />} />
             </Route>
 
             {/* Room routes */}
