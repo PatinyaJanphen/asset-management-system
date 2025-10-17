@@ -7,7 +7,6 @@ import EditAsset from "./pages/asset/EditAsset";
 import Room from "./pages/room/Room";
 import CreateRoom from "./pages/room/CreateRoom";
 import EditRoom from "./pages/room/EditRoom";
-import Setting from "./pages/Setting";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -15,6 +14,9 @@ import EmailVerify from "./pages/EmailVerify";
 import PageNotFound from "./components/PageNotFound";
 import { ToastContainer } from "react-toastify";
 import PrivateRoute from "./components/PrivateRoute";
+import Category from "./pages/category/Category";
+import CreateCategory from "./pages/category/CreateCategory";
+import EditCategory from "./pages/category/CreateCategory";
 
 const App = () => {
   return (
@@ -46,7 +48,13 @@ const App = () => {
               <Route path="/management/room/edit/:id" element={<EditRoom />} />
             </Route>
 
-            <Route path="/setting" element={<Setting />} />
+            {/* Room routes */}
+            <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
+              <Route path="/management/categorys" element={<Category />} />
+              <Route path="/management/category/create" element={<CreateCategory />} />
+              <Route path="/management/category/edit/:id" element={<EditCategory />} />
+            </Route>
+
             <Route path="/setting/profile" element={<Profile />} />
             <Route path="/email-verify" element={<EmailVerify />} />
           </Route>

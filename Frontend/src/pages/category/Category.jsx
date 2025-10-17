@@ -73,7 +73,7 @@ const Category = () => {
         cell: ({ row }) => (
           <div className="flex gap-2">
             <button onClick={() => handleEditCategory(row.original)}
-              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">
+              className="px-3 py-1 bg-amber-300 text-black rounded hover:bg-amber-400 text-sm">
               Edit
             </button>
           </div>
@@ -115,7 +115,7 @@ const Category = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Category Management</h2>
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow-md"
+          className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow-md"
           onClick={() => { navigate('/management/category/create') }}
         >
           + Add Category

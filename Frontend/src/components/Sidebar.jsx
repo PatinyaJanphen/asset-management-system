@@ -46,22 +46,22 @@ const Sidebar = () => {
 
 
     return (
-        <aside className={`bg-gray-900 text-white transition-all duration-300 ${isOpen ? "w-64" : "w-16"}`} >
+        <aside className={`bg-white text-gray-600 transition-all duration-300 ${isOpen ? "w-64" : "w-16"}`} >
             <div className="flex justify-center pt-4 pb-2">
-                <button onClick={() => setIsOpen(!isOpen)} className="p-2 bg-gray-800 rounded-md hover:bg-gray-700 transition-colors" >
+                <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-md transition-colors hover:bg-gray-100" >
                     <FiMenu size={24} />
                 </button>
             </div>
 
             <ul className="mt-4">
                 <ul className="mt-4">
-                    <li onClick={() => navigation('/')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-700 ${location.pathname === '/' ? 'bg-indigo-600' : ''}`}>
+                    <li onClick={() => navigation('/')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-100 ${location.pathname === '/' ? 'bg-indigo-100' : ''}`}>
                         <FiHome />
                         {isOpen && <span>Dashboard</span>}
                     </li>
 
                     <li>
-                        <div onClick={() => setIsManagementOpen(!isManagementOpen)} className={`flex items-center justify-between cursor-pointer px-4 py-3 hover:bg-gray-700 ${isSettingsOpen ? 'bg-gray-800' : ''}`}  >
+                        <div onClick={() => setIsManagementOpen(!isManagementOpen)} className={`flex items-center justify-between cursor-pointer px-4 py-3 hover:bg-gray-100 ${isSettingsOpen ? 'bg-indigo-100' : ''}`}  >
                             <div className="flex items-center gap-2">
                                 <FiDatabase />
                                 {isOpen && <span>Management </span>}
@@ -71,16 +71,16 @@ const Sidebar = () => {
 
                         {isManagementOpen && isOpen && (
                             <ul className="ml-10 mt-1 space-y-1 text-sm">
-                                <li onClick={() => navigation('/management/assets')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/assets' ? 'bg-indigo-600' : ''}`} >
+                                <li onClick={() => navigation('/management/assets')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-100 ${location.pathname === '/management/assets' ? 'bg-indigo-100' : ''}`} >
                                     Assets
                                 </li>
                                 {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
-                                    <li onClick={() => navigation('/management/rooms')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/rooms' ? 'bg-indigo-600' : ''}`} >
+                                    <li onClick={() => navigation('/management/rooms')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-100 ${location.pathname === '/management/rooms' ? 'bg-indigo-100' : ''}`} >
                                         Rooms
                                     </li>
                                 }
                                 {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
-                                    <li onClick={() => navigation('/management/categorys')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-700 ${location.pathname === '/management/categories' ? 'bg-indigo-600' : ''}`} >
+                                    <li onClick={() => navigation('/management/categorys')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-100 ${location.pathname === '/management/categorys' ? 'bg-indigo-100' : ''}`} >
                                         Caregories
                                     </li>
                                 }
@@ -88,33 +88,7 @@ const Sidebar = () => {
                             </ul>
                         )}
                     </li>
-
-                    <li>
-                        <div onClick={() => setIsSettingsOpen(!isSettingsOpen)} className={`flex items-center justify-between cursor-pointer px-4 py-3 hover:bg-gray-700 ${isSettingsOpen ? 'bg-gray-800' : ''}`}  >
-                            <div className="flex items-center gap-2">
-                                <FiSettings />
-                                {isOpen && <span>Settings</span>}
-                            </div>
-                            {isOpen && (isSettingsOpen ? <FiChevronUp /> : <FiChevronsDown />)}
-                        </div>
-
-                        {isSettingsOpen && isOpen && (
-                            <ul className="ml-10 mt-1 space-y-1 text-sm">
-                                <li onClick={() => navigation('/setting/profile')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-700 ${location.pathname === '/profile' ? 'bg-indigo-600' : ''}`} >
-                                    <FiUser />
-                                    {isOpen && <span>Profile</span>}
-                                </li>
-
-                            </ul>
-                        )}
-                    </li>
-
-                    <li onClick={logout} className="flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-700"   >
-                        <FiLogOut />
-                        {isOpen && <span>Logout</span>}
-                    </li>
                 </ul>
-
             </ul>
         </aside>
     );

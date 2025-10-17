@@ -63,7 +63,7 @@ const Login = () => {
   }, [password, passwordConfirm, state])
 
   return (
-    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gray-200'>
+    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gray-100'>
       <div className='bg-white p-10 rounded-lg shadow-lg w-full sm:w-96 text-sm'>
         <h2 className='text-3xl font-semibold text-black text-center mb-3'>
           {state === 'Sign Up' ? 'Create Account' : 'Login'}
@@ -118,7 +118,7 @@ const Login = () => {
             </p>
           )}
 
-          <button className='w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium'>
+          <button className='w-full py-2.5 rounded-full bg-gradient-to-r bg-purple-600 text-white font-medium'>
             {state}
           </button>
         </form>
