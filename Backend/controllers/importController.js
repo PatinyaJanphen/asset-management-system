@@ -7,6 +7,7 @@ import { AssetImportService } from '../services/import/AssetImportService.js';
 import { RoomImportService } from '../services/import/RoomImportService.js';
 import { CategoryImportService } from '../services/import/CategoryImportService.js';
 import { UserImportService } from '../services/import/UserImportService.js';
+import { FileManagementService } from '../services/FileManagementService.js';
 
 // Import Assets
 export const importAssets = async (req, res) => {
@@ -14,27 +15,29 @@ export const importAssets = async (req, res) => {
         return res.json({ success: false, message: "กรุณาเลือกไฟล์ที่ต้องการนำเข้า" });
     }
 
-    const filePath = req.file.path;
-    const fileExtension = path.extname(req.file.originalname).toLowerCase();
-    const filename = req.file.originalname;
-
     try {
+        const fileResult = await FileManagementService.handleUploadedFile(req.file, req.user?.id);
+        if (!fileResult.success) {
+            return res.json({ 
+                success: false, 
+                message: "ไฟล์ไม่ถูกต้อง", 
+                errors: fileResult.errors 
+            });
+        }
+
         // อ่านข้อมูลจากไฟล์
-        const data = await readFileData(filePath, fileExtension);
+        const data = await readFileData(fileResult.filePath, path.extname(fileResult.originalName).toLowerCase());
         
-        // ใช้ AssetImportService
-        const result = await AssetImportService.processImport(data, req.user?.id, filename);
+        const result = await AssetImportService.processImport(data, req.user?.id, fileResult.originalName);
         
-        // ลบไฟล์ที่อัปโหลด
-        fs.unlinkSync(filePath);
+        await FileManagementService.cleanupAfterProcessing(fileResult.filePath);
         
         return res.json(result);
     } catch (error) {
         console.error('Error importing assets:', error);
         
-        // ลบไฟล์ที่อัปโหลด
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+        if (req.file && fs.existsSync(req.file.path)) {
+            await FileManagementService.cleanupAfterProcessing(req.file.path);
         }
 
         return res.json({ 
@@ -59,17 +62,14 @@ export const importRooms = async (req, res) => {
         // อ่านข้อมูลจากไฟล์
         const data = await readFileData(filePath, fileExtension);
         
-        // ใช้ RoomImportService
         const result = await RoomImportService.processImport(data, req.user?.id, filename);
         
-        // ลบไฟล์ที่อัปโหลด
         fs.unlinkSync(filePath);
         
         return res.json(result);
     } catch (error) {
         console.error('Error importing rooms:', error);
         
-        // ลบไฟล์ที่อัปโหลด
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
         }
@@ -96,17 +96,14 @@ export const importCategories = async (req, res) => {
         // อ่านข้อมูลจากไฟล์
         const data = await readFileData(filePath, fileExtension);
         
-        // ใช้ CategoryImportService
         const result = await CategoryImportService.processImport(data, req.user?.id, filename);
         
-        // ลบไฟล์ที่อัปโหลด
         fs.unlinkSync(filePath);
         
         return res.json(result);
     } catch (error) {
         console.error('Error importing categories:', error);
         
-        // ลบไฟล์ที่อัปโหลด
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
         }

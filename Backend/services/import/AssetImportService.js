@@ -1,81 +1,16 @@
 import { prisma } from "../../config/databaseconnect.js";
-import fs from 'fs';
-import path from 'path';
+import { BaseImportService } from "./BaseImportService.js";
 
 export class AssetImportService {
     static async processImport(assets, userId, filename) {
-        let errors = [];
-        let successCount = 0;
-        let failedCount = 0;
-
         try {
-            // ตรวจสอบข้อมูลทั้งหมดก่อนเริ่มบันทึกข้อมูล
-            const validationErrors = await this.validateAllData(assets);
-            
-            if (validationErrors.length > 0) {
-                return {
-                    success: false,
-                    message: "การอัปโหลดถูกยกเลิกเนื่องจากพบข้อมูลที่ไม่ถูกต้อง",
-                    data: {
-                        totalRows: assets.length,
-                        successRows: 0,
-                        failedRows: assets.length,
-                        errors: validationErrors,
-                        importId: null
-                    }
-                };
-            }
-
-            // ตรวจสอบและบันทึกข้อมูล
-            for (let i = 0; i < assets.length; i++) {
-                const assetData = assets[i];
-                const rowNumber = i + 2; // +2 เพราะ header row และ array index เริ่มจาก 0
-                
-                try {
-                    const result = await this.processAssetRow(assetData, rowNumber);
-                    if (result.success) {
-                        successCount++;
-                    } else {
-                        errors.push(result.error);
-                        failedCount++;
-                    }
-                } catch (error) {
-                    errors.push(`แถว ${rowNumber}: ${error.message}`);
-                    failedCount++;
-                }
-            }
-
-            // บันทึกข้อมูลการ import
-            const importRecord = await prisma.excelImport.create({
-                data: {
-                    filename: filename,
-                    importType: 'ASSET',
-                    importedBy: userId ? BigInt(userId) : null,
-                    totalRows: assets.length,
-                    successRows: successCount,
-                    failedRows: failedCount,
-                    errorLogUrl: errors.length > 0 ? `errors_${Date.now()}.txt` : null
-                }
-            });
-
-            // สร้างไฟล์ error log (ถ้ามี error)
-            if (errors.length > 0) {
-                const errorLogPath = path.join(process.cwd(), 'uploads', `errors_${Date.now()}.txt`);
-                fs.writeFileSync(errorLogPath, errors.join('\n'));
-            }
-
-            return {
-                success: true,
-                message: `นำเข้าข้อมูลเสร็จสิ้น: สำเร็จ ${successCount} รายการ, ล้มเหลว ${failedCount} รายการ`,
-                data: {
-                    totalRows: assets.length,
-                    successRows: successCount,
-                    failedRows: failedCount,
-                    errors: errors,
-                    importId: importRecord.id.toString()
-                }
-            };
-
+            return await BaseImportService.processAllData(
+                assets,
+                this.processAssetRow,
+                'ASSET',
+                userId,
+                filename
+            );
         } catch (error) {
             console.error('Error in AssetImportService:', error);
             throw error;
@@ -89,14 +24,18 @@ export class AssetImportService {
             const assetData = assets[i];
             const rowNumber = i + 2;
             
+            const objectTypeErrors = BaseImportService.validateObjectTypes(
+                assetData, 
+                ['ownerEmail', 'categoryName', 'roomCode'], 
+                rowNumber
+            );
+            validationErrors.push(...objectTypeErrors);
+            
+            if (objectTypeErrors.length > 0) continue;
+
             // ตรวจสอบ ownerEmail
             if (assetData.ownerEmail) {
-                if (typeof assetData.ownerEmail === 'object') {
-                    validationErrors.push(`แถว ${rowNumber}: ownerEmail เป็น object type ที่ไม่ถูกต้อง`);
-                    continue;
-                }
-                
-                const ownerEmailStr = String(assetData.ownerEmail).trim();
+                const ownerEmailStr = BaseImportService.sanitizeString(assetData.ownerEmail);
                 
                 if (!ownerEmailStr.includes('@') || ownerEmailStr.length < 5) {
                     validationErrors.push(`แถว ${rowNumber}: รูปแบบ Email ไม่ถูกต้อง "${ownerEmailStr}"`);
@@ -113,12 +52,7 @@ export class AssetImportService {
 
             // ตรวจสอบ categoryName
             if (assetData.categoryName) {
-                if (typeof assetData.categoryName === 'object') {
-                    validationErrors.push(`แถว ${rowNumber}: categoryName เป็น object type ที่ไม่ถูกต้อง`);
-                    continue;
-                }
-                
-                const categoryNameStr = String(assetData.categoryName).trim();
+                const categoryNameStr = BaseImportService.sanitizeString(assetData.categoryName);
                 const category = await prisma.category.findUnique({ 
                     where: { name: categoryNameStr } 
                 });
@@ -129,12 +63,7 @@ export class AssetImportService {
 
             // ตรวจสอบ roomCode
             if (assetData.roomCode) {
-                if (typeof assetData.roomCode === 'object') {
-                    validationErrors.push(`แถว ${rowNumber}: roomCode เป็น object type ที่ไม่ถูกต้อง`);
-                    continue;
-                }
-                
-                const roomCodeStr = String(assetData.roomCode).trim();
+                const roomCodeStr = BaseImportService.sanitizeString(assetData.roomCode);
                 const room = await prisma.room.findUnique({ 
                     where: { code: roomCodeStr } 
                 });
@@ -150,30 +79,28 @@ export class AssetImportService {
     static async processAssetRow(assetData, rowNumber) {
         try {
             // ตรวจสอบข้อมูลที่จำเป็น
-            if (!assetData.code || !assetData.name) {
-                return { success: false, error: `แถว ${rowNumber}: รหัสและชื่อสินทรัพย์จำเป็นต้องกรอก` };
+            const requiredFields = ['code', 'name'];
+            const requiredErrors = BaseImportService.validateRequiredFields(assetData, requiredFields, rowNumber);
+            if (requiredErrors.length > 0) {
+                return { success: false, error: requiredErrors[0] };
             }
             
-            // ตรวจสอบว่า field หลักไม่ใช่ object
-            if (typeof assetData.code === 'object' || typeof assetData.name === 'object') {
-                return { success: false, error: `แถว ${rowNumber}: รหัสหรือชื่อสินทรัพย์เป็น object type ที่ไม่ถูกต้อง` };
+            const objectTypeErrors = BaseImportService.validateObjectTypes(assetData, ['code', 'name'], rowNumber);
+            if (objectTypeErrors.length > 0) {
+                return { success: false, error: objectTypeErrors[0] };
             }
 
             // ตรวจสอบรหัสสินทรัพย์ซ้ำ
-            const existingAsset = await prisma.asset.findUnique({ 
-                where: { code: assetData.code } 
-            });
-            if (existingAsset) {
-                return { success: false, error: `แถว ${rowNumber}: รหัสสินทรัพย์ "${assetData.code}" มีอยู่แล้ว` };
+            const codeError = await BaseImportService.checkDuplicate('asset', 'code', assetData.code, rowNumber, 'รหัสสินทรัพย์');
+            if (codeError) {
+                return { success: false, error: codeError };
             }
 
-            // ตรวจสอบหมายเลขซีเรียลซ้ำ (ถ้ามี)
+            // ตรวจสอบหมายเลขซีเรียลซ้ำ
             if (assetData.serial_number) {
-                const existingSerial = await prisma.asset.findUnique({ 
-                    where: { serial_number: assetData.serial_number } 
-                });
-                if (existingSerial) {
-                    return { success: false, error: `แถว ${rowNumber}: หมายเลขซีเรียล "${assetData.serial_number}" มีอยู่แล้ว` };
+                const serialError = await BaseImportService.checkDuplicate('asset', 'serial_number', assetData.serial_number, rowNumber, 'หมายเลขซีเรียล');
+                if (serialError) {
+                    return { success: false, error: serialError };
                 }
             }
 
@@ -183,12 +110,10 @@ export class AssetImportService {
                 return processedData;
             }
 
-            // สร้างสินทรัพย์
-            await prisma.asset.create({
-                data: processedData.data
-            });
-
-            return { success: true };
+            return { 
+                success: true, 
+                data: processedData.data 
+            };
 
         } catch (error) {
             return { success: false, error: `แถว ${rowNumber}: ${error.message}` };
@@ -299,7 +224,7 @@ export class AssetImportService {
                     purchase_at: assetData.purchase_at ? new Date(assetData.purchase_at) : null,
                     value: assetData.value ? parseFloat(assetData.value) : null,
                     is_active: isActive,
-                    created_by: null // จะถูกกำหนดใน controller
+                    created_by: null
                 }
             };
 

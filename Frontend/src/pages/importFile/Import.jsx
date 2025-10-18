@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AppContent } from '../../context/AppContext';
+import { FileUploadProgress, ImportProgress } from '../../components/ProgressIndicator';
 
 const Import = () => {
     const { backendUrl } = useContext(AppContent);
@@ -11,6 +12,9 @@ const Import = () => {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [importResult, setImportResult] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [importStep, setImportStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState('uploading');
 
     const importTypes = [
         { value: 'asset', label: 'สินทรัพย์ (Asset)', description: 'นำเข้าข้อมูลสินทรัพย์' },
@@ -53,6 +57,20 @@ const Import = () => {
         try {
             setUploading(true);
             setImportResult(null);
+            setUploadProgress(0);
+            setImportStep(1);
+            setCurrentStep('uploading');
+
+            // Simulate upload progress
+            const progressInterval = setInterval(() => {
+                setUploadProgress(prev => {
+                    if (prev >= 90) {
+                        clearInterval(progressInterval);
+                        return 90;
+                    }
+                    return prev + 10;
+                });
+            }, 200);
 
             const { data } = await axios.post(
                 backendUrl + `/api/import/${selectedType}`,
@@ -60,17 +78,26 @@ const Import = () => {
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                    },
+                    }
                 }
             );
+
+            clearInterval(progressInterval);
+            setUploadProgress(100);
+            setCurrentStep('processing');
+            setImportStep(2);
+
+            // Simulate processing step
+            setTimeout(() => {
+                setCurrentStep('saving');
+                setImportStep(3);
+            }, 1000);
 
             if (data.success) {
                 setImportResult(data.data);
                 setFile(null);
-
                 const fileInput = document.getElementById('fileInput');
                 if (fileInput) fileInput.value = '';
-
                 toast.success(data.message);
             } else {
                 setImportResult(data.data);
@@ -78,9 +105,20 @@ const Import = () => {
             }
         } catch (error) {
             console.error('Import error:', error);
-            toast.error(error.response?.data?.message || 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล');
+            console.error('Error response:', error.response?.data);
+
+            const errorMessage = error.response?.data?.message || 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล';
+            const errorList = error.response?.data?.data?.errors || [errorMessage];
+
+            console.log('Error list:', errorList);
+
+            setImportResult(error.response?.data?.data || null);
+            toast.error(errorMessage);
         } finally {
             setUploading(false);
+            setUploadProgress(0);
+            setImportStep(1);
+            setCurrentStep('uploading');
         }
     };
 
@@ -109,6 +147,9 @@ const Import = () => {
     const handleReset = () => {
         setImportResult(null);
         setFile(null);
+        setUploadProgress(0);
+        setImportStep(1);
+        setCurrentStep('uploading');
         const fileInput = document.getElementById('fileInput');
         if (fileInput) fileInput.value = '';
     };
@@ -191,6 +232,25 @@ const Import = () => {
                     {uploading ? 'กำลังนำเข้าข้อมูล...' : 'นำเข้าข้อมูล'}
                 </button>
             </div>
+
+            {/* แสดงสถานะการอัพโหลด */}
+            {uploading && (
+                <div className="mb-6 space-y-4">
+                    <FileUploadProgress
+                        progress={uploadProgress}
+                        fileName={file?.name || ''}
+                        fileSize={file?.size || 0}
+                        status="uploading"
+                    />
+                    <ImportProgress
+                        step={importStep}
+                        totalSteps={3}
+                        currentStep={currentStep}
+                        progress={uploadProgress}
+                        message={`กำลังนำเข้าข้อมูล${importTypes.find(t => t.value === selectedType)?.label || ''}`}
+                    />
+                </div>
+            )}
 
             {/* แสดงผลลัพธ์ */}
             {importResult && (
