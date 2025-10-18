@@ -58,7 +58,7 @@ const CreateAsset = () => {
           console.log('Users set:', usersWithFullName)
         }
       } catch (error) {
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล')
+        toast.error(error.message)
       } finally {
         setLoading(false)
       }

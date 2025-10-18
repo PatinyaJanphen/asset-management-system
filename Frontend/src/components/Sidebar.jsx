@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FiMenu, FiHome, FiUser, FiSettings, FiLogOut, FiChevronUp, FiChevronsDown, FiDatabase, FiUpload } from "react-icons/fi";
+import { FiMenu, FiHome, FiChevronUp, FiChevronsDown, FiDatabase, FiUpload, FiFileText } from "react-icons/fi";
 import { AppContent } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -91,6 +91,12 @@ const Sidebar = () => {
                         <li onClick={() => navigation('/import')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-100 ${location.pathname === '/import' ? 'bg-indigo-100' : ''}`} >
                             <FiUpload />
                             {isOpen && <span>Import File</span>}
+                        </li>
+                    }
+                    {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                        <li onClick={() => navigation('/report')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-100 ${location.pathname === '/report' ? 'bg-indigo-100' : ''}`} >
+                            <FiFileText />
+                            {isOpen && <span>Report</span>}
                         </li>
                     }
                 </ul>

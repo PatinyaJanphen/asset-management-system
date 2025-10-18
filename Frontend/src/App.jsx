@@ -19,6 +19,9 @@ import CreateCategory from "./pages/category/CreateCategory";
 import EditCategory from "./pages/category/CreateCategory";
 import Import from "./pages/importFile/Import";
 import ImportHistory from "./pages/importFile/ImportHistory";
+import Report from "./pages/report/Report";
+import AnnualReport from "./pages/report/AnnualReport";
+import ReportPreview from "./pages/report/ReportPreview";
 
 const App = () => {
   return (
@@ -43,13 +46,6 @@ const App = () => {
               <Route path="/management/asset/edit/:id" element={<EditAsset />} />
             </Route>
 
-            {/* Import routes */}
-            <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
-              <Route path="/import" element={<Import />} />
-              <Route path="/import/import-history" element={<ImportHistory />} />
-
-            </Route>
-
             {/* Room routes */}
             <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
               <Route path="/management/rooms" element={<Room />} />
@@ -57,11 +53,24 @@ const App = () => {
               <Route path="/management/room/edit/:id" element={<EditRoom />} />
             </Route>
 
-            {/* Room routes */}
+            {/* categorys routes */}
             <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
               <Route path="/management/categorys" element={<Category />} />
               <Route path="/management/category/create" element={<CreateCategory />} />
               <Route path="/management/category/edit/:id" element={<EditCategory />} />
+            </Route>
+
+            {/* Report routes */}
+            <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
+              <Route path="/report" element={<Report />} />
+              <Route path="/report/annual" element={<AnnualReport />} />
+              <Route path="/report/preview" element={<ReportPreview />} />
+            </Route>
+
+            {/* Import routes */}
+            <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
+              <Route path="/import" element={<Import />} />
+              <Route path="/import/import-history" element={<ImportHistory />} />
             </Route>
 
             <Route path="/setting/profile" element={<Profile />} />
