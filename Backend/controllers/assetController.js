@@ -75,7 +75,14 @@ export const createAsset = async (req, res) => {
 //  Get All Assets 
 export const getAllAssets = async (req, res) => {
     try {
+        let whereCondition = {};
+        
+        if (req.user.role === 'OWNER') {
+            whereCondition.ownerId = BigInt(req.user.id);
+        }
+
         const assets = await prisma.asset.findMany({
+            where: whereCondition,
             include: {
                 category: true,
                 room: true,
