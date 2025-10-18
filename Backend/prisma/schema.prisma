@@ -185,6 +185,7 @@ model AssetLog {
 model ExcelImport {
   id            BigInt    @id @default(autoincrement())
   filename      String
+  importType    String    @default("ASSET") // ASSET, ROOM, CATEGORY, USER
   importedBy    BigInt?
   totalRows     Int?
   successRows   Int?
@@ -196,4 +197,5 @@ model ExcelImport {
 
   @@index([importedBy])
   @@index([created_at])
+  @@index([importType])
 }

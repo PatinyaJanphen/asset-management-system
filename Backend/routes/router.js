@@ -5,6 +5,7 @@ import assetRouter from './assetRouter.js';
 import roomRouter from './roomRouter.js';
 import categoryRouter from './categoryRouter.js';
 import dashboardRouter from './dashboardRouter.js';
+import importRouter from './importRouter.js';
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use('/asset', assetRouter);
 router.use('/room', roomRouter);
 router.use('/category', categoryRouter);
 router.use('/dashboard', dashboardRouter);
+router.use('/import', importRouter);
 
 export default router;

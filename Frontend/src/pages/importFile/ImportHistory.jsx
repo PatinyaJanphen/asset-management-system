@@ -25,7 +25,7 @@ const ImportHistory = () => {
     const fetchImportHistory = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${backendUrl}/api/asset/import/history`, {
+            const response = await axios.get(`${backendUrl}/api/import/history`, {
                 params: {
                     page: pagination.currentPage,
                     limit: pagination.itemsPerPage
@@ -51,7 +51,7 @@ const ImportHistory = () => {
 
     const handleViewDetail = async (importId) => {
         try {
-            const response = await axios.get(`${backendUrl}/api/asset/import/detail/${importId}`, {
+            const response = await axios.get(`${backendUrl}/api/import/detail/${importId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -125,15 +125,6 @@ const ImportHistory = () => {
                     </div>
                     <div className="flex gap-2">
                         <button
-                            onClick={() => navigate('/management/asset/import')}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 flex items-center gap-2"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Import ใหม่
-                        </button>
-                        <button
                             onClick={() => navigate('/management/asset')}
                             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200 flex items-center gap-2"
                         >
@@ -148,23 +139,23 @@ const ImportHistory = () => {
 
             {/* สถิติรวม */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                <div className="bg-white p-4 rounded-lg  shadow-sm">
                     <div className="text-2xl font-bold text-blue-600">{pagination.totalItems}</div>
                     <div className="text-sm text-gray-600">การ Import ทั้งหมด</div>
                 </div>
-                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                <div className="bg-white p-4 rounded-lg  shadow-sm">
                     <div className="text-2xl font-bold text-green-600">
                         {imports.filter(imp => imp.failedRows === 0).length}
                     </div>
                     <div className="text-sm text-gray-600">สำเร็จทั้งหมด</div>
                 </div>
-                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                <div className="bg-white p-4 rounded-lg  shadow-sm">
                     <div className="text-2xl font-bold text-yellow-600">
                         {imports.filter(imp => imp.successRows > 0 && imp.failedRows > 0).length}
                     </div>
                     <div className="text-sm text-gray-600">บางส่วนสำเร็จ</div>
                 </div>
-                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                <div className="bg-white p-4 rounded-lg  shadow-sm">
                     <div className="text-2xl font-bold text-red-600">
                         {imports.filter(imp => imp.successRows === 0).length}
                     </div>
@@ -173,7 +164,7 @@ const ImportHistory = () => {
             </div>
 
             {/* ตารางประวัติ */}
-            <div className="bg-white rounded-lg border shadow-sm">
+            <div className="bg-white rounded-lg  shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900">รายการ Import</h3>
                 </div>
