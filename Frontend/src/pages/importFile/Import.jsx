@@ -106,11 +106,8 @@ const Import = () => {
         } catch (error) {
             console.error('Import error:', error);
             console.error('Error response:', error.response?.data);
-
             const errorMessage = error.response?.data?.message || 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล';
             const errorList = error.response?.data?.data?.errors || [errorMessage];
-
-            console.log('Error list:', errorList);
 
             setImportResult(error.response?.data?.data || null);
             toast.error(errorMessage);

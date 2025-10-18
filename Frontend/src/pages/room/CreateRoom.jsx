@@ -34,7 +34,6 @@ const CreateRoom = () => {
 
         try {
             setSaving(true)
-            console.log('Creating room:', room)
             const { data } = await axios.post(`${backendUrl}/api/room/create`, room)
 
             if (data.success) {

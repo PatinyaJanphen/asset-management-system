@@ -18,6 +18,9 @@ const Report = () => {
                 <li onClick={() => navigate('/report/annual')} className='my-2 cursor-pointer'>
                   1.1 รายงานทรัพย์สิน
                 </li>
+                <li onClick={() => navigate('/report/annual-by-user')} className='my-2 cursor-pointer'>
+                  1.2 รายงานทรัพย์สินตามผู้ใช้
+                </li>
               </ul>
             )
             }

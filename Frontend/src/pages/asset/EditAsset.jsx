@@ -110,7 +110,6 @@ const EditAsset = () => {
 
     try {
       setSaving(true)
-      console.log('Updating asset:', asset)
       const { data } = await axios.put(`${backendUrl}/api/asset/update/${id}`, asset)
 
       if (data.success) {

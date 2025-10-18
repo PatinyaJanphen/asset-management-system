@@ -14,7 +14,7 @@ const UserFilter = ({ selectedUsers = [], onUserChange, className = "" }) => {
     setLoading(true);
     try {
       axios.defaults.withCredentials = true;
-      const response = await axios.get(`${backendUrl}/api/user`);
+      const response = await axios.get(`${backendUrl}/api/user/all-data`);
       
       if (response.data.success) {
         const formattedUsers = response.data.userData.map(user => ({
@@ -42,15 +42,20 @@ const UserFilter = ({ selectedUsers = [], onUserChange, className = "" }) => {
     fetchUsers();
   }, []);
 
-  const handleUserChange = (newSelectedUsers) => {
-    onUserChange(newSelectedUsers);
+  const handleUserChange = (newSelectedUserIds) => {
+    // แปลง ID เป็น user objects ที่สมบูรณ์
+    const selectedUserObjects = newSelectedUserIds.map(id => 
+      users.find(user => user.id === id)
+    ).filter(user => user !== undefined);
+    
+    onUserChange(selectedUserObjects);
   };
 
   return (
     <BaseFilter
       title="กรองตามผู้ใช้"
       options={users}
-      selectedValues={selectedUsers}
+      selectedValues={selectedUsers.map(user => user.id)}
       onSelectionChange={handleUserChange}
       multiple={true}
       placeholder={loading ? "กำลังโหลด..." : "เลือกผู้ใช้..."}

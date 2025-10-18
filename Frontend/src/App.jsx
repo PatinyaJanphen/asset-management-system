@@ -21,6 +21,7 @@ import Import from "./pages/importFile/Import";
 import ImportHistory from "./pages/importFile/ImportHistory";
 import Report from "./pages/report/Report";
 import AnnualReport from "./pages/report/AnnualReport";
+import AnnualByUserReport from "./pages/report/AnnualByUserReport";
 import ReportPreview from "./pages/report/ReportPreview";
 
 const App = () => {
@@ -64,6 +65,7 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={['ADMIN', 'ASSET_STAFF']} />}>
               <Route path="/report" element={<Report />} />
               <Route path="/report/annual" element={<AnnualReport />} />
+              <Route path="/report/annual-by-user" element={<AnnualByUserReport />} />
               <Route path="/report/preview" element={<ReportPreview />} />
             </Route>
 

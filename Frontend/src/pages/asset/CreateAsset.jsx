@@ -39,7 +39,6 @@ const CreateAsset = () => {
 
         if (categoriesRes.data.success) {
           setCategories(categoriesRes.data.data || [])
-          console.log('Categories set:', categoriesRes.data.data)
         }
         if (roomsRes.data.success) {
           const roomsWithDisplayName = (roomsRes.data.data || []).map(room => ({
@@ -47,7 +46,6 @@ const CreateAsset = () => {
             displayName: `${room.name} (${room.code})`
           }))
           setRooms(roomsWithDisplayName)
-          console.log('Rooms set:', roomsWithDisplayName)
         }
         if (usersRes.data.success) {
           const usersWithFullName = (usersRes.data.userData || []).map(user => ({
@@ -55,7 +53,6 @@ const CreateAsset = () => {
             fullName: `${user.firstname} ${user.lastname}`
           }))
           setUsers(usersWithFullName)
-          console.log('Users set:', usersWithFullName)
         }
       } catch (error) {
         toast.error(error.message)
@@ -85,7 +82,6 @@ const CreateAsset = () => {
 
     try {
       setSaving(true)
-      console.log('Creating asset:', asset)
       const { data } = await axios.post(`${backendUrl}/api/asset/create`, asset)
 
       if (data.success) {
@@ -106,7 +102,6 @@ const CreateAsset = () => {
     navigate('/management/assets')
   }
 
-  console.log('Current state:', { categories, rooms, users, loading })
 
   if (loading) {
     return (

@@ -33,7 +33,6 @@ const CreateCategory = () => {
 
         try {
             setSaving(true)
-            console.log('Creating category:', category)
             const { data } = await axios.post(`${backendUrl}/api/category/create`, category)
 
             if (data.success) {

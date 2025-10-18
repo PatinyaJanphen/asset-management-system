@@ -15,7 +15,9 @@ const ReportPreview = () => {
     const [filterInfo, setFilterInfo] = useState({
         year: new Date().getFullYear(),
         selectedCategories: [],
-        selectedRooms: []
+        selectedRooms: [],
+        selectedUsers: [],
+        reportType: 'annual'
     })
     const [categoryNames, setCategoryNames] = useState([])
     const [roomNames, setRoomNames] = useState([])
@@ -111,9 +113,30 @@ const ReportPreview = () => {
         },
     ], [])
 
+    const tableData = useMemo(() => {
+        if (!reportData) return []
+
+        if (filterInfo.reportType === 'annual-by-user') {
+            const allAssets = []
+            if (reportData.userGroups) {
+                reportData.userGroups.forEach(userGroup => {
+                    userGroup.assets.forEach(asset => {
+                        allAssets.push({
+                            ...asset,
+                            owner: userGroup.user.name
+                        })
+                    })
+                })
+            }
+            return allAssets
+        } else {
+            return reportData.assets || []
+        }
+    }, [reportData, filterInfo.reportType])
+
     // สร้าง table instance
     const table = useReactTable({
-        data: reportData?.assets || [],
+        data: tableData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -175,7 +198,7 @@ const ReportPreview = () => {
 
     // ฟังก์ชันแปลง ID เป็นชื่อ
     const getCategoryNames = () => {
-        if (filterInfo.selectedCategories.length === 0) return 'ทั้งหมด'
+        if (!filterInfo.selectedCategories || filterInfo.selectedCategories.length === 0) return 'ทั้งหมด'
         return filterInfo.selectedCategories.map(id => {
             const category = categoryNames.find(cat => cat.id === id)
             return category ? category.name : `ID: ${id}`
@@ -183,11 +206,16 @@ const ReportPreview = () => {
     }
 
     const getRoomNames = () => {
-        if (filterInfo.selectedRooms.length === 0) return 'ทั้งหมด'
+        if (!filterInfo.selectedRooms || filterInfo.selectedRooms.length === 0) return 'ทั้งหมด'
         return filterInfo.selectedRooms.map(id => {
             const room = roomNames.find(r => r.id === id)
             return room ? room.name : `ID: ${id}`
         }).join(', ')
+    }
+
+    const getUserNames = () => {
+        if (!filterInfo.selectedUsers || filterInfo.selectedUsers.length === 0) return 'ทั้งหมด'
+        return filterInfo.selectedUsers.map(user => user.name).join(', ')
     }
 
     const exportReport = async () => {
@@ -198,13 +226,26 @@ const ReportPreview = () => {
 
         setExporting(true)
         try {
-            const filterParams = {
-                year: filterInfo.year,
-                categoryIds: filterInfo.selectedCategories,
-                roomIds: filterInfo.selectedRooms
+            let filterParams, endpoint, filename
+
+            if (filterInfo.reportType === 'annual-by-user') {
+                filterParams = {
+                    year: filterInfo.year,
+                    userIds: filterInfo.selectedUsers
+                }
+                endpoint = '/api/report/export/annual-by-user/excel'
+                filename = `annual_by_user_report_${filterInfo.year}_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
+            } else {
+                filterParams = {
+                    year: filterInfo.year,
+                    categoryIds: filterInfo.selectedCategories,
+                    roomIds: filterInfo.selectedRooms
+                }
+                endpoint = '/api/report/export/excel'
+                filename = `annual_report_${filterInfo.year}_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
             }
 
-            const response = await axios.post(`${backendUrl}/api/report/export/excel`, filterParams, {
+            const response = await axios.post(`${backendUrl}${endpoint}`, filterParams, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -215,12 +256,7 @@ const ReportPreview = () => {
             const url = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = url
-            const now = new Date();
-            const day = now.getDate().toString().padStart(2, '0');
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const yearExport = now.getFullYear();
-            const exportDate = `${day}${month}${yearExport}`; // DDMMYYYY
-            link.setAttribute('download', `annual_report_${filterInfo.year}_${exportDate}.xlsx`)
+            link.setAttribute('download', filename)
             document.body.appendChild(link)
             link.click()
             link.remove()
@@ -239,7 +275,11 @@ const ReportPreview = () => {
     }
 
     const goBack = () => {
-        navigate('/report/annual')
+        if (filterInfo.reportType === 'annual-by-user') {
+            navigate('/report/annual-by-user')
+        } else {
+            navigate('/report/annual')
+        }
     }
 
     if (!reportData) {
@@ -294,7 +334,7 @@ const ReportPreview = () => {
             </div>
 
             {/* รายการครุภัณฑ์ */}
-            {reportData.assets && reportData.assets.length > 0 ? (
+            {tableData && tableData.length > 0 ? (
                 <div>
                     {/* TanStack Table */}
                     <div className="overflow-auto max-h-96 border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
@@ -440,19 +480,27 @@ const ReportPreview = () => {
             )}
 
             {/* Footer Info */}
-            <p className="text-sm text-gray-600 mt-1">
+            <div className="text-sm text-gray-600 mt-1">
                 <ul className='font-medium'>
                     <li>
                         ปี: {filterInfo.year}
                     </li>
-                    <li>
-                        หมวดหมู่: {getCategoryNames()}
-                    </li>
-                    <li>
-                        ห้อง: {getRoomNames()}
-                    </li>
+                    {filterInfo.reportType === 'annual-by-user' ? (
+                        <li key="user-filter">
+                            ผู้ใช้: {getUserNames()}
+                        </li>
+                    ) : (
+                        <>
+                            <li>
+                                หมวดหมู่: {getCategoryNames()}
+                            </li>
+                            <li>
+                                ห้อง: {getRoomNames()}
+                            </li>
+                        </>
+                    )}
                 </ul>
-            </p>
+            </div>
         </div>
     )
 }
