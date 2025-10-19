@@ -26,7 +26,7 @@ npm run dev
 
 **3. ติดตั้งและรัน Frontend**
 ```bash
-cd ../Frontend
+cd Frontend
 npm install
 npm run dev
 ```
