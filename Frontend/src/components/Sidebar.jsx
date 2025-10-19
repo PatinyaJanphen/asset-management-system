@@ -74,12 +74,12 @@ const Sidebar = () => {
                                 <li onClick={() => navigation('/management/assets')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-100 ${location.pathname === '/management/assets' ? 'bg-indigo-100' : ''}`} >
                                     Assets
                                 </li>
-                                {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                                {userData && (userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
                                     <li onClick={() => navigation('/management/rooms')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-100 ${location.pathname === '/management/rooms' ? 'bg-indigo-100' : ''}`} >
                                         Rooms
                                     </li>
                                 }
-                                {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                                {userData && (userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
                                     <li onClick={() => navigation('/management/categorys')} className={`cursor-pointer px-2 py-2 rounded hover:bg-gray-100 ${location.pathname === '/management/categorys' ? 'bg-indigo-100' : ''}`} >
                                         Caregories
                                     </li>
@@ -87,13 +87,13 @@ const Sidebar = () => {
                             </ul>
                         )}
                     </li>
-                    {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                    {userData && (userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
                         <li onClick={() => navigation('/import')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-100 ${location.pathname === '/import' ? 'bg-indigo-100' : ''}`} >
                             <FiUpload />
                             {isOpen && <span>Import File</span>}
                         </li>
                     }
-                    {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                    {userData && (userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
                         <li onClick={() => navigation('/report')} className={`flex items-center gap-2 cursor-pointer px-4 py-3 hover:bg-gray-100 ${location.pathname === '/report' ? 'bg-indigo-100' : ''}`} >
                             <FiFileText />
                             {isOpen && <span>Report</span>}

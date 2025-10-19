@@ -26,21 +26,25 @@ export const getUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const { userId, firstname, lastname, phone } = req.body
+        const { firstname, lastname, phone, email } = req.body
         const currentUser = req.user
 
-        const targetUserId = userId || currentUser.id
+        // Allow users to update only their own data, or admins to update any user
+        const userId = currentUser.id
 
-        if (currentUser.role !== 'ADMIN' && currentUser.id !== Number(targetUserId)) {
-            return res.json({ success: false, message: "Permission denied" })
-        }
-
-        const user = await prisma.user.findUnique({ where: { id: targetUserId } })
+        const user = await prisma.user.findUnique({ where: { id: BigInt(userId) } })
         if (!user) return res.json({ success: false, message: "User not found" })
 
+        // Prepare update data
+        const updateData = {}
+        if (firstname !== undefined) updateData.firstname = firstname
+        if (lastname !== undefined) updateData.lastname = lastname
+        if (phone !== undefined) updateData.phone = phone
+        if (email !== undefined) updateData.email = email
+
         await prisma.user.update({
-            where: { id: BigInt(targetUserId) },
-            data: { firstname: firstname, lastname: lastname, phone: phone }
+            where: { id: BigInt(userId) },
+            data: updateData
         })
         return res.json({ success: true, message: "Update user data successful" });
     } catch (error) {

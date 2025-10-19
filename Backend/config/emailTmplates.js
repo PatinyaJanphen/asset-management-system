@@ -103,11 +103,7 @@ a[x-apple-data-detectors] {
               </tr>
               <tr>
                 <td align="center" class="esd-block-button es-p40t es-p40b es-p10r es-p10l">
-                  <span class="es-button-border es-button-border-6356 es-fw" style="border-style: solid; background: #3d5ca3">
-                    <a href="https://viewstripo.email/" target="_blank" class="es-button es-button-9125" style="color: #fcfdff; background: #3d5ca3; mso-border-alt: 10px solid #3d5ca3">
-                      {{otp}}
-                    </a>
-                  </span>
+                  {{otp}}
                 </td>
               </tr>
             </tbody>

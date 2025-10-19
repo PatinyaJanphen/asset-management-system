@@ -15,7 +15,7 @@ const CreateAsset = () => {
     serial_number: '',
     categoryId: '',
     roomId: '',
-    ownerId: '',
+    ownerId: null,
     status: 'AVAILABLE',
     purchase_at: '',
     value: '',
@@ -52,7 +52,12 @@ const CreateAsset = () => {
             ...user,
             fullName: `${user.firstname} ${user.lastname}`
           }))
-          setUsers(usersWithFullName)
+          // เพิ่มตัวเลือก "ไม่ระบุเจ้าของ" ที่ด้านบนของรายการ
+          const usersWithEmptyOption = [
+            { id: null, fullName: 'ไม่ระบุเจ้าของ' },
+            ...usersWithFullName
+          ]
+          setUsers(usersWithEmptyOption)
         }
       } catch (error) {
         toast.error(error.message)
@@ -401,6 +406,12 @@ function SearchableDropdown({
     setSearchTerm('')
   }
 
+  const handleClear = () => {
+    onChange(null)
+    setIsOpen(false)
+    setSearchTerm('')
+  }
+
   const handleToggle = () => {
     setIsOpen(!isOpen)
     if (!isOpen) {
@@ -410,23 +421,42 @@ function SearchableDropdown({
 
   return (
     <div className={`relative searchable-dropdown ${className}`}>
-      <button
-        type="button"
-        onClick={handleToggle}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-left flex justify-between items-center"
-      >
-        <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
-          {selectedOption ? selectedOption[displayKey] : placeholder}
-        </span>
-        <svg
-          className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <div className="relative">
+        <button
+          type="button"
+          onClick={handleToggle}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-left flex justify-between items-center"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+          <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
+            {selectedOption ? selectedOption[displayKey] : placeholder}
+          </span>
+          <div className="flex items-center space-x-1">
+            {selectedOption && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleClear()
+                }}
+                className="text-gray-400 hover:text-gray-600 p-1"
+                title="ล้างค่า"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            <svg
+              className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+      </div>
 
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-hidden">

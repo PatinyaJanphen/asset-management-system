@@ -41,8 +41,8 @@ export const register = async (req, res) => {
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: email,
-            subject: "Verify your email",
-            text: `Please verify your email id: ${email}`,
+            subject: "Create account successful",
+            text: `Welcom to Asset-ss Hello: ${email}`,
         };
         await transporter.sendMail(mailOptions);
 
@@ -111,15 +111,15 @@ export const logout = async (req, res) => {
 // Send Verification OTP
 export const sendVerificationEmail = async (req, res) => {
     try {
-        const { userId } = req.body;
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const userId = req.user.id; // Get userId from middleware
+        const user = await prisma.user.findUnique({ where: { id: BigInt(userId) } });
         if (!user) return res.json({ success: false, message: "User not found" });
         if (user.isAccountVerified) return res.json({ success: false, message: "Account already verified" });
 
         const otp = String(Math.floor(100000 + Math.random() * 900000));
 
         await prisma.user.update({
-            where: { id: userId },
+            where: { id: BigInt(userId) },
             data: {
                 verifyOtp: otp,
                 verifyOtpExpireAt: new Date(Date.now() + 10 * 60 * 1000),
@@ -145,11 +145,12 @@ export const sendVerificationEmail = async (req, res) => {
 
 // verify email with otp
 export const verifyEmail = async (req, res) => {
-    const { userId, otp } = req.body;
-    if (!userId || !otp) return res.json({ success: false, message: "Missing details" });
+    const { otp } = req.body;
+    const userId = req.user.id; // Get userId from middleware
+    if (!otp) return res.json({ success: false, message: "OTP is required" });
 
     try {
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const user = await prisma.user.findUnique({ where: { id: BigInt(userId) } });
         if (!user) return res.json({ success: false, message: "User not found" });
 
         if (!user.verifyOtp || user.verifyOtp !== otp) return res.json({ success: false, message: "Invalid OTP" });

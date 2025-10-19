@@ -84,50 +84,50 @@ const ResetPassword = () => {
   }, [newPassword, newPasswordConfirm])
 
   return (
-    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400'>
+    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gray-100'>
 
       {/* email */}
       {!isEmailSent &&
-        <form onSubmit={onSubmitEmail} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
-          <h1 className='text-white text-2xl font-semibold text-center mb-4'>Reset password</h1>
-          <p className='text-center mb-6 text-indigo-300'>Enter the 6-digit code sent to your email.</p>
-          <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]'>
-            <input className='text-white' type='email' placeholder='Email' value={email} onChange={e => setEmail(e.target.value)} required />
+        <form onSubmit={onSubmitEmail} className='bg-white p-10 rounded-lg shadow-lg w-full sm:w-96 text-sm'>
+          <h1 className='text-black text-2xl font-semibold text-center mb-4'>Reset password</h1>
+          <p className='text-center mb-6 text-black'>Enter the 6-digit code sent to your email.</p>
+          <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
+            <input className='bg-transparent outline-none text-black' type='email' placeholder='Email' value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
-          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3'>Submit</button>
+          <button className='w-full py-2.5 rounded-full bg-gradient-to-r bg-purple-600 text-white font-medium'>Submit</button>
         </form>
       }
 
       {/* OTP form */}
       {!isOtpSubmit && isEmailSent &&
-        <form onSubmit={onSubmitOtp} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
-          <h1 className='text-white text-2xl font-semibold text-center mb-4'>Email Verify OTP</h1>
-          <p className='text-center mb-6 text-indigo-300'>Enter the 6-digit code sent to your email.</p>
+        <form onSubmit={onSubmitOtp} className='bg-white p-10 rounded-lg shadow-lg w-full sm:w-96 text-sm'>
+          <h1 className='text-black text-2xl font-semibold text-center mb-4'>Email Verify OTP</h1>
+          <p className='text-center mb-6 text-black'>Enter the 6-digit code sent to your email.</p>
           <div className='flex justify-between mb-8' onPaste={handlePaste}>
             {Array(6).fill(0).map((_, index) => (
-              <input className='w-12 h-12 bg-[#333a5c] text-white text-center text-xl rounded-md'
+              <input className='w-12 h-12 bg-[#ebebeb] text-black text-center text-xl rounded-md'
                 type='text' maxLength={1} key={index} required
                 ref={e => inputRefs.current[index] = e}
                 onInput={(e) => handleInput(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)} />
             ))}
           </div>
-          <button className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full'>Verify email</button>
+          <button className='w-full py-2.5 rounded-full bg-gradient-to-r bg-purple-600 text-white font-medium'>Submit</button>
         </form>
       }
 
 
       {/* new password */}
       {isOtpSubmit && isEmailSent &&
-        <form onSubmit={onSubmitNewpassword} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
-          <h1 className='text-white text-2xl font-semibold text-center mb-4'>New password</h1>
-          <p className='text-center mb-6 text-indigo-300'>Enter the new password.</p>
-          <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]'>
-            <input className='text-white' type='password' placeholder='New password' value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
+        <form onSubmit={onSubmitNewpassword} className='bg-white p-10 rounded-lg shadow-lg w-full sm:w-96 text-sm'>
+          <h1 className='text-black text-2xl font-semibold text-center mb-4'>New password</h1>
+          <p className='text-center mb-6 text-black'>Enter the new password.</p>
+          <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
+            <input className='text-black' type='password' placeholder='New password' value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
           </div>
           <div className='mb-4 flex flex-col w-full'>
-            <div className='flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#333A5C]'>
-              <input className='text-white' type='password' placeholder='New password confirm' value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} required />
+            <div className='flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#ebebeb]'>
+              <input className='text-black' type='password' placeholder='New password confirm' value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} required />
             </div>
             {passwordMatchError && (
               <span className="text-red-400 text-xs mt-1 px-2">{passwordMatchError}</span>
@@ -135,7 +135,7 @@ const ResetPassword = () => {
           </div>
 
 
-          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3'>Submit</button>
+          <button className='w-full py-2.5 rounded-full bg-gradient-to-r bg-purple-600 text-white font-medium'>Submit</button>
         </form>
       }
 

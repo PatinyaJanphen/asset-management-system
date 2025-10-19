@@ -16,7 +16,7 @@ import {
 } from '@tanstack/react-table'
 
 const Asset = () => {
-    const { backendUrl } = useContext(AppContent)
+    const { backendUrl, userData } = useContext(AppContent)
     const navigate = useNavigate()
     const [assets, setAssets] = useState([])
     const [loading, setLoading] = useState(true)
@@ -116,19 +116,22 @@ const Asset = () => {
                     filterVariant: 'text',
                 },
             },
-            {
-                id: 'actions',
-                header: 'การดำเนินการ',
-                cell: ({ row }) => (
-                    <div className="flex gap-2">
-                        <button onClick={() => handleEditRoom(row.original)}
-                            className="px-3 py-1 bg-amber-300 text-black rounded hover:bg-amber-400 text-sm">
-                            แก้ไข
-                        </button>
-
-                    </div>
-                ),
-            },
+            ...(userData && (userData.role === "ADMIN" || userData.role === "ASSET_STAFF")
+                ? [{
+                    id: 'actions',
+                    header: 'การดำเนินการ',
+                    cell: ({ row }) => (
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => handleEditRoom(row.original)}
+                                className="px-3 py-1 bg-amber-300 text-black rounded hover:bg-amber-400 text-sm"
+                            >
+                                แก้ไข
+                            </button>
+                        </div>
+                    ),
+                }]
+                : []),
         ],
         []
     )
@@ -164,11 +167,13 @@ const Asset = () => {
         <div className="p-6 bg-white rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">จัดการสินทรัพย์</h2>
-                <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow-md"
-                        onClick={() => { navigate('/management/asset/create') }}
-                    >+ เพิ่มสินทรัพย์ </button>
-                </div>
+                {userData && (userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
+                    <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow-md"
+                            onClick={() => { navigate('/management/asset/create') }}
+                        >+ เพิ่มสินทรัพย์ </button>
+                    </div>
+                }
             </div>
             <table className="min-w-full border border-gray-300">
                 <thead>
