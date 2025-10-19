@@ -1,4 +1,4 @@
-name: Deploy Asset Management System test site
+name: Deploy Asset Management System testsite
 
 on:
   push:
