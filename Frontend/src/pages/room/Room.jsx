@@ -16,7 +16,7 @@ import {
 } from '@tanstack/react-table'
 
 const Room = () => {
-    const { backendUrl } = useContext(AppContent)
+    const {  } = useContext(AppContent)
     const navigate = useNavigate()
     const [rooms, setRooms] = useState([])
     const [loading, setLoading] = useState(true)
@@ -25,7 +25,7 @@ const Room = () => {
     const fetchRooms = async () => {
         try {
             setLoading(true)
-            const { data } = await axios.get(backendUrl + '/api/room/all')
+            const { data } = await axios.get('/api/room/all')
             if (data.success) {
                 setRooms(data.data || [])
             } else {

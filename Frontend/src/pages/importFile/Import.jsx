@@ -6,7 +6,7 @@ import { AppContent } from '../../context/AppContext';
 import { FileUploadProgress, ImportProgress } from '../../components/ProgressIndicator';
 
 const Import = () => {
-    const { backendUrl } = useContext(AppContent);
+    const {  } = useContext(AppContent);
     const navigate = useNavigate();
     const [selectedType, setSelectedType] = useState('asset');
     const [file, setFile] = useState(null);
@@ -73,7 +73,7 @@ const Import = () => {
             }, 200);
 
             const { data } = await axios.post(
-                backendUrl + `/api/import/${selectedType}`,
+                '/api/import/${selectedType}`,
                 formData,
                 {
                     headers: {
@@ -121,7 +121,7 @@ const Import = () => {
 
     const handleDownloadTemplate = async () => {
         try {
-            const response = await axios.get(backendUrl + `/api/import/template/${selectedType}`, {
+            const response = await axios.get('/api/import/template/${selectedType}`, {
                 responseType: 'blob',
             });
 

@@ -8,13 +8,13 @@ import { AppContent } from '../../context/AppContext';
 const CategoryFilter = ({ selectedCategories = [], onCategoryChange, className = "" }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { backendUrl } = useContext(AppContent);
+  const {  } = useContext(AppContent);
 
   const fetchCategories = async () => {
     setLoading(true);
     try {
       axios.defaults.withCredentials = true;
-      const response = await axios.get(`${backendUrl}/api/category/all`);
+      const response = await axios.get(`/api/category/all`);
       
       if (response.data.success) {
         setCategories(response.data.data || []);

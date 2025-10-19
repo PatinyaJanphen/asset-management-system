@@ -8,13 +8,13 @@ import { AppContent } from '../../context/AppContext';
 const UserFilter = ({ selectedUsers = [], onUserChange, className = "" }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { backendUrl } = useContext(AppContent);
+  const {  } = useContext(AppContent);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
       axios.defaults.withCredentials = true;
-      const response = await axios.get(`${backendUrl}/api/user/all-data`);
+      const response = await axios.get(`/api/user/all-data`);
       
       if (response.data.success) {
         const formattedUsers = response.data.userData.map(user => ({

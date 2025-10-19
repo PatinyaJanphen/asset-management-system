@@ -16,7 +16,7 @@ import {
 } from '@tanstack/react-table'
 
 const Category = () => {
-  const { backendUrl } = useContext(AppContent)
+  const {  } = useContext(AppContent)
   const navigate = useNavigate()
   const [categorys, setCategorys] = useState([]);
   const [search, setSearch] = useState("");
@@ -26,7 +26,7 @@ const Category = () => {
   const fetchCategorys = async () => {
     try {
       setLoading(true)
-      const { data } = await axios.get(backendUrl + '/api/category/all');
+      const { data } = await axios.get('/api/category/all');
       if (data.success) {
         setCategorys(data.data || []);
       } else {

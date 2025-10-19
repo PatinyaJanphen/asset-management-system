@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { AppContent } from '../../context/AppContext';
 
 const ImportHistory = () => {
-    const { backendUrl } = useContext(AppContent);
+    const {  } = useContext(AppContent);
     const navigate = useNavigate();
     const [imports, setImports] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const ImportHistory = () => {
     const fetchImportHistory = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${backendUrl}/api/import/history`, {
+            const response = await axios.get(`/api/import/history`, {
                 params: {
                     page: pagination.currentPage,
                     limit: pagination.itemsPerPage
@@ -51,7 +51,7 @@ const ImportHistory = () => {
 
     const handleViewDetail = async (importId) => {
         try {
-            const response = await axios.get(`${backendUrl}/api/import/detail/${importId}`, {
+            const response = await axios.get(`/api/import/detail/${importId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

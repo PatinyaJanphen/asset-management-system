@@ -6,7 +6,7 @@ import { FiDownload, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-ic
 import axios from 'axios'
 
 const ReportPreview = () => {
-    const { backendUrl } = useContext(AppContent)
+    const {  } = useContext(AppContent)
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -170,12 +170,12 @@ const ReportPreview = () => {
         const fetchFilterData = async () => {
             try {
                 const [categoriesResponse, roomsResponse] = await Promise.all([
-                    axios.get(`${backendUrl}/api/category/all`, {
+                    axios.get(`/api/category/all`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
                     }),
-                    axios.get(`${backendUrl}/api/room/all`, {
+                    axios.get(`/api/room/all`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { AppContent } from '../../context/AppContext'
 
 const EditRoom = () => {
-    const { backendUrl } = useContext(AppContent)
+    const {  } = useContext(AppContent)
     const { id } = useParams()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
@@ -24,7 +24,7 @@ const EditRoom = () => {
     const fetchRoom = async () => {
         try {
             setLoading(true)
-            const { data } = await axios.get(`${backendUrl}/api/room/get/${id}`)
+            const { data } = await axios.get(`/api/room/get/${id}`)
             if (data.success) {
                 setRoom({
                     code: data.data.code,
@@ -62,7 +62,7 @@ const EditRoom = () => {
 
         try {
             setSaving(true)
-            const { data } = await axios.put(`${backendUrl}/api/room/update/${id}`, room)
+            const { data } = await axios.put(`/api/room/update/${id}`, room)
 
             if (data.success) {
                 toast.success('แก้ไขข้อมูล Room สำเร็จ!')

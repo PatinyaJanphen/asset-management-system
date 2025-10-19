@@ -7,7 +7,7 @@ import { AppContent } from '../../context/AppContext'
 const EditAsset = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const { backendUrl } = useContext(AppContent)
+  const {  } = useContext(AppContent)
 
   const [asset, setAsset] = useState({
     code: '',
@@ -35,10 +35,10 @@ const EditAsset = () => {
         setLoading(true)
 
         const [assetRes, categoriesRes, roomsRes, usersRes] = await Promise.all([
-          axios.get(`${backendUrl}/api/asset/get/${id}`),
-          axios.get(`${backendUrl}/api/category/all`),
-          axios.get(`${backendUrl}/api/room/all`),
-          axios.get(`${backendUrl}/api/user/all-data`)
+          axios.get(`/api/asset/get/${id}`),
+          axios.get(`/api/category/all`),
+          axios.get(`/api/room/all`),
+          axios.get(`/api/user/all-data`)
         ])
 
         if (assetRes.data.success) {
@@ -115,7 +115,7 @@ const EditAsset = () => {
 
     try {
       setSaving(true)
-      const { data } = await axios.put(`${backendUrl}/api/asset/update/${id}`, asset)
+      const { data } = await axios.put(`/api/asset/update/${id}`, asset)
 
       if (data.success) {
         toast.success('อัปเดตสินทรัพย์สำเร็จ!')

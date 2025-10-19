@@ -6,7 +6,7 @@ import { AppContent } from '../../context/AppContext'
 
 const CreateRoom = () => {
     const navigate = useNavigate()
-    const { backendUrl } = useContext(AppContent)
+    const {  } = useContext(AppContent)
 
     const [room, setRoom] = useState({
         code: '',
@@ -34,7 +34,7 @@ const CreateRoom = () => {
 
         try {
             setSaving(true)
-            const { data } = await axios.post(`${backendUrl}/api/room/create`, room)
+            const { data } = await axios.post(`/api/room/create`, room)
 
             if (data.success) {
                 toast.success('สร้างห้องใหม่สำเร็จ!')

@@ -6,7 +6,7 @@ import axios from 'axios'
 
 const CreateCategory = () => {
     const navigate = useNavigate()
-    const { backendUrl } = useContext(AppContent)
+    const {  } = useContext(AppContent)
 
     const [category, setCategory] = useState({
         name: '',
@@ -33,7 +33,7 @@ const CreateCategory = () => {
 
         try {
             setSaving(true)
-            const { data } = await axios.post(`${backendUrl}/api/category/create`, category)
+            const { data } = await axios.post(`/api/category/create`, category)
 
             if (data.success) {
                 toast.success('สร้างห้องใหม่สำเร็จ!')

@@ -16,7 +16,7 @@ import {
 } from '@tanstack/react-table'
 
 const Asset = () => {
-    const { backendUrl, userData } = useContext(AppContent)
+    const { userData  } = useContext(AppContent)
     const navigate = useNavigate()
     const [assets, setAssets] = useState([])
     const [loading, setLoading] = useState(true)
@@ -25,7 +25,7 @@ const Asset = () => {
     const fetchAssets = async () => {
         try {
             setLoading(true)
-            const { data } = await axios.get(backendUrl + '/api/asset/all')
+            const { data } = await axios.get('/api/asset/all')
             if (data.success) {
                 setAssets(data.data || [])
             } else {
