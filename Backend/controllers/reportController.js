@@ -218,7 +218,7 @@ export const exportAnnualByUserReportCSV = async (req, res) => {
                 lt: new Date(year + 1, 0, 1)
             },
             ownerId: {
-                in: userIds.map(id => BigInt(id))
+                in: userIds.map(user => BigInt(user.id))
             }
         };
 
