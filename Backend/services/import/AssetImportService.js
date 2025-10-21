@@ -6,7 +6,7 @@ export class AssetImportService {
         try {
             return await BaseImportService.processAllData(
                 assets,
-                this.processAssetRow,
+                this.processAssetRow.bind(this),
                 'ASSET',
                 userId,
                 filename
@@ -105,7 +105,7 @@ export class AssetImportService {
             }
 
             // ตรวจสอบและแปลงข้อมูล
-            const processedData = await this.processAssetData(assetData, rowNumber);
+            const processedData = await AssetImportService.processAssetData(assetData, rowNumber);
             if (!processedData.success) {
                 return processedData;
             }
