@@ -6,7 +6,7 @@ import { FiCalendar, FiBarChart2 } from 'react-icons/fi'
 import axios from 'axios'
 
 const AnnualReport = () => {
-    const {  } = useContext(AppContent)
+    const { backendUrl } = useContext(AppContent)
     const navigate = useNavigate()
     const [selectedCategories, setSelectedCategories] = useState([])
     const [selectedRooms, setSelectedRooms] = useState([])
@@ -36,7 +36,7 @@ const AnnualReport = () => {
                 roomIds: selectedRooms
             }
 
-            const response = await axios.post(`/api/report/annual`, filterParams, {
+            const response = await axios.post(`${backendUrl}/api/report/annual`, filterParams, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

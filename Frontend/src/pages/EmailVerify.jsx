@@ -7,7 +7,7 @@ import { AppContent } from '../context/AppContext'
 const EmailVerify = () => {
   axios.defaults.withCredentials = true
   const inputRefs = React.useRef([])
-  const { isLoggedin, userData, getUserData  } = useContext(AppContent)
+  const { backendUrl, isLoggedin, userData, getUserData } = useContext(AppContent)
   const navigate = useNavigate()
 
   const handleInput = (e, index) => {
@@ -38,7 +38,7 @@ const EmailVerify = () => {
       const otpArray = inputRefs.current.map(e => e.value)
       const otp = otpArray.join('')
 
-      const { data } = await axios.post('/api/auth/verify-account', { otp })
+      const { data } = await axios.post(backendUrl + '/api/auth/verify-account', { otp })
 
       if (data.success) {
         toast.success(data.message)
@@ -60,7 +60,7 @@ const EmailVerify = () => {
   useEffect(() => {
     const sendOtp = async () => {
       try {
-        const { data } = await axios.post('/api/auth/send-verify-otp')
+        const { data } = await axios.post(backendUrl + '/api/auth/send-verify-otp')
         if (data.success) {
           toast.success(data.message)
         } else {

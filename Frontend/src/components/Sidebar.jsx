@@ -7,7 +7,7 @@ import axios from "axios";
 
 const Sidebar = () => {
     const navigation = useNavigate();
-    const { userData setUserData, setIsLoggedin  } = useContext(AppContent)
+    const { userData, backendUrl, setUserData, setIsLoggedin } = useContext(AppContent)
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(true);
     const [isManagementOpen, setIsManagementOpen] = useState(false);
@@ -17,7 +17,7 @@ const Sidebar = () => {
         try {
             axios.defaults.withCredentials = true
 
-            const { data } = await axios.post('/api/auth/send-verify-otp')
+            const { data } = await axios.post(backendUrl + '/api/auth/send-verify-otp')
             if (data.success) {
                 navigation('/email-verify')
                 toast.success(data.message)
@@ -33,7 +33,7 @@ const Sidebar = () => {
     const logout = async () => {
         try {
             axios.defaults.withCredentials = true
-            const { data } = await axios.post('/api/auth/logout');
+            const { data } = await axios.post(backendUrl + '/api/auth/logout');
 
             data.success && setIsLoggedin(false)
             data.success && setUserData(false)

@@ -6,7 +6,7 @@ import { AppContent } from '../../context/AppContext'
 
 const CreateAsset = () => {
   const navigate = useNavigate()
-  const {  } = useContext(AppContent)
+  const { backendUrl } = useContext(AppContent)
 
   const [asset, setAsset] = useState({
     code: '',
@@ -32,9 +32,9 @@ const CreateAsset = () => {
     const fetchData = async () => {
       try {
         const [categoriesRes, roomsRes, usersRes] = await Promise.all([
-          axios.get(`/api/category/all`),
-          axios.get(`/api/room/all`),
-          axios.get(`/api/user/all-data`)
+          axios.get(`${backendUrl}/api/category/all`),
+          axios.get(`${backendUrl}/api/room/all`),
+          axios.get(`${backendUrl}/api/user/all-data`)
         ])
 
         if (categoriesRes.data.success) {
@@ -87,7 +87,7 @@ const CreateAsset = () => {
 
     try {
       setSaving(true)
-      const { data } = await axios.post(`/api/asset/create`, asset)
+      const { data } = await axios.post(`${backendUrl}/api/asset/create`, asset)
 
       if (data.success) {
         toast.success('สร้างสินทรัพย์ใหม่สำเร็จ!')

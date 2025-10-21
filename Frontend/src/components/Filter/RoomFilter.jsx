@@ -8,13 +8,13 @@ import { AppContent } from '../../context/AppContext';
 const RoomFilter = ({ selectedRooms = [], onRoomChange, className = "" }) => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
-  const {  } = useContext(AppContent);
+  const { backendUrl } = useContext(AppContent);
 
   const fetchRooms = async () => {
     setLoading(true);
     try {
       axios.defaults.withCredentials = true;
-      const response = await axios.get(`/api/room/all`);
+      const response = await axios.get(`${backendUrl}/api/room/all`);
       
       if (response.data.success) {
         setRooms(response.data.data || []);

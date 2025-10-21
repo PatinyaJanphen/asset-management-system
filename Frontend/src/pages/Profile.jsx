@@ -7,7 +7,7 @@ import { FiMail, FiPhone, FiEdit3, FiSave, FiX, FiShield, FiKey } from 'react-ic
 
 const Profile = () => {
     axios.defaults.withCredentials = true
-    const { isLoggedin, userData, getUserData  } = useContext(AppContent)
+    const { backendUrl, isLoggedin, userData, getUserData } = useContext(AppContent)
     const navigate = useNavigate()
 
     const [firstname, setFirstname] = useState('')
@@ -20,7 +20,7 @@ const Profile = () => {
     const onSubmitSave = async (e) => {
         e.preventDefault()
         try {
-            const { data } = await axios.post('/api/user/update-data', { firstname, lastname: lastName, phone, email })
+            const { data } = await axios.post(backendUrl + '/api/user/update-data', { firstname, lastname: lastName, phone, email })
             if (data.success) {
                 toast.success(data.message)
                 setIsEditing(false)

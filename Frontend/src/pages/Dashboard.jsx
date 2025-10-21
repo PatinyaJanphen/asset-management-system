@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { AppContent } from '../context/AppContext';
 
 const Dashboard = () => {
-  const { userData  } = useContext(AppContent)
+  const { backendUrl, userData } = useContext(AppContent)
 
   const [summary, setSummary] = useState({
     totalAsset: 0,
@@ -25,8 +25,8 @@ const Dashboard = () => {
     try {
       const isAdminLike = (role) => ['ADMIN', 'ASSET_STAFF'].includes(role)
 
-      let url = isAdminLike(userData.role) ? '/api/dashboard/summary'
-        : '/api/dashboard/summary/owner'
+      let url = isAdminLike(userData.role) ? backendUrl + '/api/dashboard/summary'
+        : backendUrl + '/api/dashboard/summary/owner'
 
       if (isAdminLike(userData.role) && dateRange.startDate && dateRange.endDate) {
         url += `?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`

@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 
 const ResetPassword = () => {
   axios.defaults.withCredentials = true
-  const { isLoggedin, userData, getUserData  } = useContext(AppContent)
+  const { backendUrl, isLoggedin, userData, getUserData } = useContext(AppContent)
 
   const navigate = useNavigate()
   const inputRefs = React.useRef([])
@@ -43,7 +43,7 @@ const ResetPassword = () => {
   const onSubmitEmail = async (e) => {
     e.preventDefault()
     try {
-      const { data } = await axios.post('/api/auth/send-reset-password-otp', { email })
+      const { data } = await axios.post(backendUrl + '/api/auth/send-reset-password-otp', { email })
       data.success ? toast.success(data.message) : toast.error(data.message)
       data.success && setIsEmailSent(true)
     }
@@ -62,7 +62,7 @@ const ResetPassword = () => {
   const onSubmitNewpassword = async (e) => {
     e.preventDefault()
     try {
-      const { data } = await axios.post('/api/auth/reset-password', { email, otp, newPassword })
+      const { data } = await axios.post(backendUrl + '/api/auth/reset-password', { email, otp, newPassword })
       data.success ? toast.success(data.message) : toast.error(data.message)
       data.success && navigate('/login')
     }

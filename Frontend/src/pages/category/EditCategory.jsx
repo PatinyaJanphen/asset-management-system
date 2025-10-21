@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { AppContent } from '../../context/AppContext'
 
 const EditCategory = () => {
-    const {  } = useContext(AppContent)
+    const { backendUrl } = useContext(AppContent)
     const { id } = useParams()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
@@ -23,7 +23,7 @@ const EditCategory = () => {
     const fetchCategory = async () => {
         try {
             setLoading(true)
-            const { data } = await axios.get(`/api/category/get/${id}`)
+            const { data } = await axios.get(`${backendUrl}/api/category/get/${id}`)
             if (data.success) {
                 setCategory({
                     name: data.data.name,
@@ -59,7 +59,7 @@ const EditCategory = () => {
 
         try {
             setSaving(true)
-            const { data } = await axios.put(`/api/category/update/${id}`, {
+            const { data } = await axios.put(`${backendUrl}/api/category/update/${id}`, {
                 categoryId: id,
                 name: category.name,
                 description: category.description,
