@@ -63,3 +63,9 @@ Axios
 - นำเข้าข้อมูล - Import ข้อมูลจากไฟล์ Excel
 - Dashboard - หน้าจอแสดงข้อมูลสรุป
 ```
+
+```bash
+https://asset-ss.duckdns.org/
+staff@staff.com
+12345678
+```
