@@ -16,13 +16,13 @@ import { ToastContainer } from "react-toastify";
 import PrivateRoute from "./components/PrivateRoute";
 import Category from "./pages/category/Category";
 import CreateCategory from "./pages/category/CreateCategory";
-import EditCategory from "./pages/category/CreateCategory";
 import Import from "./pages/importFile/Import";
 import ImportHistory from "./pages/importFile/ImportHistory";
 import Report from "./pages/report/Report";
 import AnnualReport from "./pages/report/AnnualReport";
 import AnnualByUserReport from "./pages/report/AnnualByUserReport";
 import ReportPreview from "./pages/report/ReportPreview";
+import EditCategory from "./pages/category/EditCategory";
 
 const App = () => {
   return (

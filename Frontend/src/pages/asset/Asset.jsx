@@ -121,7 +121,7 @@ const Asset = () => {
                     id: 'actions',
                     header: 'การดำเนินการ',
                     cell: ({ row }) => (
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 justify-center">
                             <button
                                 onClick={() => handleEditRoom(row.original)}
                                 className="px-3 py-1 bg-amber-300 text-black rounded hover:bg-amber-400 text-sm"

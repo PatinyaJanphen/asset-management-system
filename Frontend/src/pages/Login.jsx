@@ -66,43 +66,43 @@ const Login = () => {
     <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gray-100'>
       <div className='bg-white p-10 rounded-lg shadow-lg w-full sm:w-96 text-sm'>
         <h2 className='text-3xl font-semibold text-black text-center mb-3'>
-          {state === 'Sign Up' ? 'Create Account' : 'Login'}
+          {state === 'Sign Up' ? 'สร้างบัญชี' : 'เข้าสู่ระบบ'}
         </h2>
         <p className='text-center text-sm mb-6'>
-          {state === 'Sign Up' ? 'Create your account' : 'Login to your account!'}
+          {state === 'Sign Up' ? 'สร้างบัญชีของคุณ' : 'เข้าสู่ระบบบัญชีของคุณ!'}
         </p>
 
         <form onSubmit={onSubitHandler}>
           <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
-            <input onChange={e => setEmail(e.target.value)} value={email} className='bg-transparent outline-none text-black' type='email' placeholder='Email' required />
+            <input onChange={e => setEmail(e.target.value)} value={email} className='bg-transparent outline-none text-black' type='email' placeholder='อีเมล' required />
           </div>
 
           {state === 'Sign Up' && (
             <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
-              <input onChange={e => setUsername(e.target.value)} value={username} className='bg-transparent outline-none text-black' type='text' placeholder='Username' required />
+              <input onChange={e => setUsername(e.target.value)} value={username} className='bg-transparent outline-none text-black' type='text' placeholder='ชื่อผู้ใช้' required />
             </div>
           )}
 
           {state === 'Sign Up' && (
             <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
-              <input onChange={e => setFristname(e.target.value)} value={firstname} className='bg-transparent outline-none text-black' type='text' placeholder='First name' required />
+              <input onChange={e => setFristname(e.target.value)} value={firstname} className='bg-transparent outline-none text-black' type='text' placeholder='ชื่อ' required />
             </div>
           )}
 
           {state === 'Sign Up' && (
             <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
-              <input onChange={e => setLastname(e.target.value)} value={lastname} className='bg-transparent outline-none text-black' type='text' placeholder='Last name' required />
+              <input onChange={e => setLastname(e.target.value)} value={lastname} className='bg-transparent outline-none text-black' type='text' placeholder='สกุล' required />
             </div>
           )}
 
           <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#ebebeb]'>
-            <input onChange={e => setPassword(e.target.value)} value={password} className='bg-transparent outline-none text-black' type='password' placeholder='Password' required />
+            <input onChange={e => setPassword(e.target.value)} value={password} className='bg-transparent outline-none text-black' type='password' placeholder='รหัสผ่าน' required />
           </div>
 
           {state === 'Sign Up' && (
             <div className='mb-4 flex flex-col w-full'>
               <div className='flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#ebebeb]'>
-                <input onChange={e => setPasswordConfirm(e.target.value)} value={passwordConfirm} className='bg-transparent outline-none text-black' type='password' placeholder='Password confirm' required />
+                <input onChange={e => setPasswordConfirm(e.target.value)} value={passwordConfirm} className='bg-transparent outline-none text-black' type='password' placeholder='ยืนยันรหัสผ่าน' required />
 
               </div>
               {passwordMatchError && (
@@ -114,25 +114,25 @@ const Login = () => {
 
           {state === 'Login' && (
             <p onClick={() => navigate('/reset-password')} className='mb-4 text-gray-300 cursor-pointer hover:text-indigo-300'>
-              Forgot password?
+              ลืมรหัสผ่าน?
             </p>
           )}
 
           <button className='w-full py-2.5 rounded-full bg-gradient-to-r bg-purple-600 text-white font-medium'>
-            {state}
+            {state === 'Sign Up' ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
           </button>
         </form>
 
         {state === 'Sign Up' ? (
           <p className='text-gray-400 text-center text-xs mt-4'>
-            Already  have an account? {''}
-            <span onClick={() => setState('Login')} className='text-blue-400 cursor-pointer underline'>Login here</span>
+            มีบัญชีอยู่แล้ว? {''}
+            <span onClick={() => setState('Login')} className='text-blue-400 cursor-pointer underline'>เข้าสู่ระบบที่นี่</span>
           </p>
         ) :
           (
             <p className='text-gray-400 text-center text-xs mt-4'>
-              Don't have an account? {''}
-              <span onClick={() => setState('Sign Up')} className='text-blue-400 cursor-pointer underline'>Sign up</span>
+              ยังไม่มีบัญชี? {''}
+              <span onClick={() => setState('Sign Up')} className='text-blue-400 cursor-pointer underline'>สมัครสมาชิก</span>
             </p>
           )
         }

@@ -53,7 +53,7 @@ const Category = () => {
     () => [
       {
         accessorKey: 'name',
-        header: 'Name',
+        header: 'หมวดหมู่',
         cell: info => info.getValue(),
         meta: {
           filterVariant: 'text',
@@ -61,7 +61,7 @@ const Category = () => {
       },
       {
         accessorKey: 'description',
-        header: 'Description',
+        header: 'ลายละเอียด',
         cell: info => info.getValue(),
         meta: {
           filterVariant: 'text',
@@ -69,12 +69,12 @@ const Category = () => {
       },
       {
         id: 'actions',
-        header: 'Actions',
+        header: 'การดำเนินการ',
         cell: ({ row }) => (
-          <div className="flex gap-2">
+          <div className="flex gap-2 justify-center">
             <button onClick={() => handleEditCategory(row.original)}
               className="px-3 py-1 bg-amber-300 text-black rounded hover:bg-amber-400 text-sm">
-              Edit
+              แก้ไข
             </button>
           </div>
         ),
@@ -113,12 +113,12 @@ const Category = () => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Category Management</h2>
+        <h2 className="text-2xl font-bold text-gray-800">จัดการหมวดหมู่</h2>
         <button
           className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow-md"
           onClick={() => { navigate('/management/category/create') }}
         >
-          + Add Category
+          + เพิ่มหมวดหมู่
         </button>
       </div>
       <table className="min-w-full border border-gray-300">

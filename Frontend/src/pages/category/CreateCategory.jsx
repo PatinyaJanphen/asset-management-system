@@ -55,7 +55,7 @@ const CreateCategory = () => {
     return (
         <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">New category</h1>
+                <h1 className="text-2xl font-bold text-gray-800">เพิ่มหมวดหมู่ใหม่</h1>
                 <button
                     onClick={handleCancel}
                     className="text-gray-500 hover:text-gray-700"
@@ -69,7 +69,7 @@ const CreateCategory = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Name category *
+                        ชื่อหมวดหมู่
                     </label>
                     <input
                         type="text"
@@ -85,7 +85,7 @@ const CreateCategory = () => {
 
                 <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                        Description
+                        ลายละเอียด
                     </label>
                     <textarea
                         id="description"

@@ -6,7 +6,7 @@ import { AppContent } from '../../context/AppContext';
 import { FileUploadProgress, ImportProgress } from '../../components/ProgressIndicator';
 
 const Import = () => {
-    const { backendUrl } = useContext(AppContent);
+    const { backendUrl, userData } = useContext(AppContent);
     const navigate = useNavigate();
     const [selectedType, setSelectedType] = useState('asset');
     const [file, setFile] = useState(null);
@@ -173,20 +173,22 @@ const Import = () => {
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {importTypes.map((type) => (
-                        <div
-                            key={type.value}
-                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${selectedType === type.value
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                            onClick={() => {
-                                setSelectedType(type.value);
-                                handleReset();
-                            }}
-                        >
-                            <h3 className="font-medium text-gray-900">{type.label}</h3>
-                            <p className="text-sm text-gray-600 mt-1">{type.description}</p>
-                        </div>
+                        (type.value !== 'user' || (type.value === 'user' && userData.role === 'ADMIN')) && (
+                            <div
+                                key={type.value}
+                                className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${selectedType === type.value
+                                    ? 'border-blue-500 bg-blue-50'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                onClick={() => {
+                                    setSelectedType(type.value);
+                                    handleReset();
+                                }}
+                            >
+                                <h3 className="font-medium text-gray-900">{type.label}</h3>
+                                <p className="text-sm text-gray-600 mt-1">{type.description}</p>
+                            </div>
+                        )
                     ))}
                 </div>
             </div>

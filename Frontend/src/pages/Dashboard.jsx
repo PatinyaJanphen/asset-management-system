@@ -79,20 +79,20 @@ const Dashboard = () => {
     <>
       <div className={`grid grid-cols-1 sm:grid-cols-2 lg:${userData.role === 'OWNER' ? 'grid-cols-3' : 'grid-cols-4'} gap-4 mb-5`}>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Total Assets</h3>
+          <h3 className="text-gray-500 text-sm">สินทรัพย์รวม</h3>
           <p className="text-2xl font-bold">{summary.totalAsset}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Assets In Use</h3>
+          <h3 className="text-gray-500 text-sm">สินทรัพย์ที่ใช้งาน</h3>
           <p className="text-2xl font-bold">{summary.totalInuse}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Assets To Repair</h3>
+          <h3 className="text-gray-500 text-sm">สินทรัพย์ที่ซ่อมแซม</h3>
           <p className="text-2xl font-bold">{summary.totalReair}</p>
         </div>
         {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") &&
           <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-gray-500 text-sm">Total Users</h3>
+            <h3 className="text-gray-500 text-sm">ผู้ใช้ทั้งหมด</h3>
             <p className="text-2xl font-bold">{summary.totalUsers}</p>
           </div>
         }
@@ -101,7 +101,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-4 mb-5">
         {summary.assetByCategory.length > 0 && (
           <div className="bg-white p-4 rounded-lg shadow mt-6">
-            <h3 className="text-lg font-semibold mb-3">Assets by Category</h3>
+            <h3 className="text-lg font-semibold mb-3">สินทรัพย์ตามหมวดหมู่</h3>
             <PieChart
               series={[
                 {
@@ -121,7 +121,7 @@ const Dashboard = () => {
         {(userData.role === "ADMIN" || userData.role === "ASSET_STAFF") && (
           <div className="bg-white p-4 rounded-lg shadow mt-6">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-semibold">Assets Added by Month</h3>
+              <h3 className="text-lg font-semibold">สินทรัพย์ที่เพิ่มตามเดือน</h3>
               <div className="flex gap-2 items-center">
                 <input
                   type="date"
